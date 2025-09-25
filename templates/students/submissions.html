@@ -1,0 +1,83 @@
+<!-- 提交记录页面模板 -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>我的提交记录</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>我的提交记录</h2>
+
+    <!-- 检查是否有提交记录 -->
+    {% if submissions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>描述</th>
+                    <th>文件</th>
+                    <th>提交时间</th>
+                    <th>审核状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 遍历并显示每一条提交记录 -->
+                {% for sub in submissions %}
+                <tr>
+                    <td>{{ sub.id }}</td>
+                    <td>{{ sub.description|default:"(无描述)" }}</td>
+                    <td>
+                        <!-- 如果有文件，则提供下载链接 -->
+                        {% if sub.file %}
+                            <a href="{{ sub.file.url }}" target="_blank">下载查看</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
+                    <td>{{ sub.approved|yesno:"已通过,待审核" }}</td>
+                    <td>
+                        <!-- 删除按钮 -->
+                        <a href="{% url 'delete_submission' sub.id %}" class="btn btn-sm btn-danger">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <!-- 如果没有提交记录，则显示提示信息 -->
+        <p>您还没有提交任何资料。</p>
+    {% endif %}
+
+    <hr>
+
+    <p>
+        <!-- 导航链接 -->
+        <a href="{% url 'upload' %}">上传新资料</a> |
+        <a href="{% url 'index' %}">返回主页</a>
+    </p>
+
+</body>
+</html>

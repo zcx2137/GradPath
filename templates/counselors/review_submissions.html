@@ -1,0 +1,9 @@
+{% for sub in submissions %}
+<tr>
+    <td>{{ sub.id }}</td>
+    <td>{{ sub.student.student_id }} - {{ sub.student.full_name }}</td>
+    <td>{{ sub.description }}</td>
+    <td><a href="{{ sub.file.url }}">下载</a></td>
+    <td><a href="{% url 'approve_submission' sub.id %}" class="btn">通过审核</a></td>
+</tr>
+{% endfor %}

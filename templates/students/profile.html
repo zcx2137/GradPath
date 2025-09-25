@@ -1,0 +1,36 @@
+<!-- 个人资料页面模板 -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>我的个人资料</title>
+</head>
+<body>
+    <div class="back-link">
+        <a href="{% url 'index' %}" class="btn-back">
+            <i class="fa fa-home"></i> 返回主页
+        </a>
+    </div>
+    <h2>我的个人资料</h2>
+
+    <!-- 个人资料更新表单 -->
+    <form method="POST">
+        <!-- Django CSRF 保护令牌 -->
+        {% csrf_token %}
+        <!-- 使用 as_p 过滤器将表单字段渲染为段落 -->
+        {{ form.as_p }}
+        <!-- 提交按钮 -->
+        <button type="submit">保存</button>
+    </form>
+
+    <hr>
+
+    <p>
+        <!-- 导航链接 -->
+{#        <a href="{% url 'upload' %}">上传资料</a> |#}
+{#        <a href="{% url 'submissions' %}">查看提交记录</a> |#}
+        <a href="{% url 'logout' %}">退出登录</a>
+    </p>
+
+</body>
+</html>

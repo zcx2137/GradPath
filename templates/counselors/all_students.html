@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>所有学生信息</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .nav { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
+    </div>
+
+    <h2>所有学生信息</h2>
+    <table>
+        <tr>
+            <th>学号</th>
+            <th>姓名</th>
+            <th>学院</th>
+            <th>专业</th>
+            <th>入学年份</th>
+        </tr>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.student_id }}</td>
+            <td>{{ student.full_name }}</td>
+            <td>{{ student.college }}</td>
+            <td>{{ student.major }}</td>
+            <td>{{ student.enrollment_year|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">暂无学生数据</td></tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

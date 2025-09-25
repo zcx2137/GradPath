@@ -1,0 +1,40 @@
+<!-- 主页模板 -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>保研加分小助手 - 主页</title>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f5f5f5;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>保研加分小助手-主页</h1>
+        <div class="nav-links">
+            <a href="{% url 'profile' %}">个人资料</a>
+            <a href="{% url 'logout' %}">退出登录</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>欢迎使用保研加分小助手</h2>
+        <p>在这里你可以管理你的保研相关资料提交和审核状态</p>
+        <a href="{% url 'upload' %}">新增加分项目</a>
+        <a href="{% url 'rules' %}">查看加分细则</a>
+        <a href="{% url 'submissions' %}">我的提交记录</a>
+    </div>
+</body>
+</html>

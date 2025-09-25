@@ -1,0 +1,5 @@
+<h1>辅导员控制面板</h1>
+<p>待审核材料: {{ pending_count }}</p>
+<p>总学生数: {{ total_students }}</p>
+<a href="{% url 'review_submissions' %}">处理待审核材料</a>
+<a href="{% url 'view_all_students' %}">查看所有学生</a>

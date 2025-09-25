@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>登录选择</title>
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 100px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 20px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 18px;
+        }
+        .btn:hover {
+            background-color: #3a7bc8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>保研加分小助手</h1>
+        <a href="{% url 'login' %}" class="btn">学生登录</a>
+        <a href="{% url 'counselor_login' %}" class="btn">辅导员登录</a>
+    </div>
+</body>
+</html>
