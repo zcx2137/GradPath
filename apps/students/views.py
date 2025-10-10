@@ -1,8 +1,3 @@
-"""
-学生应用的视图函数。
-此文件包含处理学生相关HTTP请求的函数，例如用户注册。
-"""
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -16,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 
+# 学生注册表单
 class StudentRegistrationForm(forms.Form):
     student_id = forms.CharField(label='学号', max_length=20)
     password1 = forms.CharField(label='密码', widget=forms.PasswordInput)
@@ -37,8 +33,25 @@ class StudentRegistrationForm(forms.Form):
             self.add_error('password2', '两次密码输入不一致')
         return cleaned_data
 
+
+# 学生档案表单
+class ProfileForm(ModelForm):
+    class Meta:
+        # 表单的元数据配置
+        model = StudentProfile
+        fields = ['full_name', 'student_id', 'major', 'enrollment_year', 'college', 'phone', 'email']
+
+
+# 学生提交表单
+class SubmissionForm(ModelForm):
+    class Meta:
+        # 表单的元数据配置。
+        model = Submission
+        fields = ['description', 'file']
+
+
+# 用户注册
 def register(request):
-    """处理用户注册请求，使用学号作为标识"""
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
@@ -57,11 +70,11 @@ def register(request):
             return redirect('login')
     else:
         form = StudentRegistrationForm()
-    return render(request, 'students/../../templates/students/register.html', {'form': form})
+    return render(request, 'students/register.html', {'form': form})
 
 
+# 用户登录
 def login_view(request):
-    """处理用户登录请求，使用学号登录"""
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         password = request.POST.get('password')
@@ -84,21 +97,16 @@ def login_view(request):
     return render(request, 'students/login.html')
 
 
+# 用户登出
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 @login_required
 def index(request):
-    """应用主页视图"""
+    # 应用主页视图
     return render(request, 'students/home.html')
-
-class ProfileForm(ModelForm):
-    """学生档案表单。"""
-    class Meta:
-        """表单的元数据配置。"""
-        model = StudentProfile
-        fields = ['full_name', 'student_id', 'major', 'enrollment_year', 'college', 'phone', 'email']
 
 
 @login_required
@@ -132,21 +140,11 @@ def profile(request):
 
     return render(request, 'students/profile.html', {'form': form})
 
-class SubmissionForm(ModelForm):
-    """学生提交表单。
-    基于Submission模型，用于创建新的提交记录。
-    """
-    class Meta:
-        """表单的元数据配置。"""
-        model = Submission
-        fields = ['description', 'file']
-
-
 
 @login_required
 def upload(request):
     """处理文件上传请求。
-    此视图要求用户必须登录。
+    要求用户必须登录。
     GET请求时，显示一个空的文件上传表单。
     POST请求时，验证并保存表单数据（包括文件），
     并将新创建的提交记录与当前登录用户关联起来，
@@ -175,12 +173,14 @@ def upload(request):
         form = SubmissionForm()
     return render(request, 'students/upload.html', {'form': form})
 
+
 @login_required
 def submissions(request):
     profile = request.user.profile
     # 获取当前用户所有提交，按时间倒序排列
     subs = Submission.objects.filter(student=profile).order_by('-timestamp')
     return render(request, 'students/submissions.html', {'submissions': subs})
+
 
 def delete_submission(request, submission_id):
     # 获取要删除的提交记录，确保属于当前用户
@@ -204,6 +204,7 @@ def delete_submission(request, submission_id):
 def rules(request):
     return render(request, 'students/rules.html')
 
+
 def root_view(request):
-    """根路径视图，显示登录选择页面"""
+    # 根路径视图，显示登录选择页面
     return render(request, 'index.html')

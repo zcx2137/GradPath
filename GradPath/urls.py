@@ -1,5 +1,4 @@
 """GradeTeach项目的URL配置。
-
 此文件是项目的主URL配置文件，负责将URL请求分发到各个应用。
 """
 
@@ -13,8 +12,8 @@ from students.views import root_view
 urlpatterns = [
     # Django管理后台的URL
     path('admin/', admin.site.urls),
-    path('student/', include('students.urls')), #学生相关URL
-    path('counselor/', include('counselors.urls')), #辅导员相关URL
+    path('student/', include('students.urls')),  # 学生相关URL
+    path('counselor/', include('counselors.urls')),  # 辅导员相关URL
     path('', root_view, name='root'),
 ]
 
