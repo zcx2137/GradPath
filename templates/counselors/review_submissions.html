@@ -1,4 +1,10 @@
-<!-- 在辅导员审核页面模板中添加 -->
+
+    <div class="nav">
+        <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
+        <a href="{% url 'counselor_logout' %}" style="margin-left: 10px; color: #e74c3c;">退出登录</a>
+    </div>
+    <br><hr>
+
 {% for sub in submissions %}
 <tr>
     <td>{{ sub.id }}</td>
@@ -6,13 +12,28 @@
     <td>{{ sub.get_category_display }}</td>
     <td>{{ sub.remarks }}</td>
     <td>{{ sub.self_rating }}</td>
-    <td><a href="{{ sub.file.url }}">下载</a></td>
     <td>
+        {% if sub.file %}
+            <a href="{{ sub.file.url }}">下载</a>
+        {% else %}
+            无文件
+        {% endif %}
+    </td>
+    <td>
+        <!-- 通过审核表单 -->
         <form method="post" action="{% url 'approve_submission' sub.id %}">
             {% csrf_token %}
             <input type="number" name="approved_score" min="0" step="0.5" required>
-            <button type="submit" class="btn">通过审核</button>
+            <button type="submit" class="btn btn-success">通过</button>
+        </form>
+
+        <!-- 驳回审核表单 -->
+        <form method="post" action="{% url 'reject_submission' sub.id %}" style="margin-top: 10px;">
+            {% csrf_token %}
+            <textarea name="reject_reason" placeholder="请输入驳回理由" required rows="2" style="width: 100%;"></textarea>
+            <button type="submit" class="btn btn-danger">驳回</button>
         </form>
     </td>
 </tr>
+    <br><br><br>
 {% endfor %}

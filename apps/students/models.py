@@ -65,6 +65,8 @@ class Submission(models.Model):
     file = models.FileField("提交文件", upload_to='uploads/', null=True, blank=True)
     self_rating = models.DecimalField("自评加分", max_digits=5, decimal_places=1, default=0)
     approved = models.BooleanField("已审核通过", default=False)
+    rejected = models.BooleanField(default=False, verbose_name='已驳回')
+    reject_reason = models.TextField(blank=True, null=True, verbose_name='驳回理由')
     approved_score = models.DecimalField("审核加分", max_digits=5, decimal_places=1, null=True, blank=True)
     timestamp = models.DateTimeField("提交时间", auto_now_add=True)
 

@@ -120,7 +120,18 @@
                             {% endif %}
                         </td>
                         <td>{{ sub.self_rating }}</td>
-                        <td>{{ sub.approved|yesno:"已通过,待审核" }}</td>
+                        <td>
+                            {% if sub.approved %}
+                                <span style="color: green;">已通过</span>
+                            {% elif sub.rejected %}
+                                <span style="color: red;">已驳回</span>
+                                {% if sub.reject_reason %}
+                                    <div style="font-size: 0.8em; color: #666;">理由: {{ sub.reject_reason }}</div>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: orange;">待审核</span>
+                            {% endif %}
+                        </td>
                         <td>{{ sub.approved_score|default:"-" }}</td>
                         <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
                         <td>

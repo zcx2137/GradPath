@@ -13,6 +13,7 @@
 <body>
     <div class="nav">
         <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
+        <a href="{% url 'counselor_logout' %}" style="margin-left: 10px; color: #e74c3c;">退出登录</a>
     </div>
 
     <h2>所有学生信息</h2>
@@ -36,5 +37,6 @@
         <tr><td colspan="5">暂无学生数据</td></tr>
         {% endfor %}
     </table>
+
 </body>
 </html>

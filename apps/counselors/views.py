@@ -6,8 +6,10 @@ from .models import CounselorProfile
 from django import forms
 from django.contrib.auth.decorators import login_required
 from students.models import StudentProfile, Submission
+from django.contrib.auth import logout
 
 
+# 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
     employee_id = forms.CharField(label='工号', max_length=20)
     full_name = forms.CharField(label='姓名', max_length=100)
@@ -27,6 +29,7 @@ class CounselorRegistrationForm(forms.Form):
             self.add_error('password2', '两次密码不一致')
 
 
+# 辅导员注册
 def counselor_register(request):
     if request.method == 'POST':
         form = CounselorRegistrationForm(request.POST)
@@ -48,6 +51,7 @@ def counselor_register(request):
     return render(request, 'counselors/register.html', {'form': form})
 
 
+# 辅导员登录
 def counselor_login(request):
     if request.method == 'POST':
         emp_id = request.POST.get('employee_id')
@@ -62,9 +66,19 @@ def counselor_login(request):
     return render(request, 'counselors/login.html')
 
 
+# 辅导员退出登录
+@login_required
+def counselor_logout(request):
+    """辅导员退出登录"""
+    # 验证是否为辅导员
+    if hasattr(request.user, 'counselor_profile'):
+        logout(request)
+    return redirect('index')  # 退出后返回登录选择页
+
+
+# 辅导员控制面板
 @login_required
 def counselor_dashboard(request):
-    """辅导员控制面板，显示待审核材料数量等统计信息"""
     # 验证是否为辅导员
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')  # 非辅导员跳转到学生登录
@@ -77,9 +91,9 @@ def counselor_dashboard(request):
     })
 
 
+# 审核材料
 @login_required
 def review_submissions(request):
-    """查看所有待审核的学生材料"""
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
@@ -89,9 +103,9 @@ def review_submissions(request):
     })
 
 
+# 审核通过
 @login_required
 def approve_submission(request, submission_id):
-    """审核通过学生提交的材料"""
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
@@ -103,9 +117,25 @@ def approve_submission(request, submission_id):
     return redirect('review_submissions')
 
 
+# 审核不通过，驳回材料
+@login_required
+def reject_submission(request, submission_id):
+    # 验证是否为辅导员
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    submission = get_object_or_404(Submission, id=submission_id)
+    if request.method == 'POST':
+        submission.approved = False  # 确保未通过
+        submission.rejected = True   # 标记为已驳回
+        submission.reject_reason = request.POST.get('reject_reason')  # 获取驳回理由
+        submission.save()
+    return redirect('review_submissions')
+
+
+# 查看学生信息
 @login_required
 def view_all_students(request):
-    """查看所有学生信息"""
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
