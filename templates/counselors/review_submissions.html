@@ -1,9 +1,18 @@
+<!-- 在辅导员审核页面模板中添加 -->
 {% for sub in submissions %}
 <tr>
     <td>{{ sub.id }}</td>
     <td>{{ sub.student.student_id }} - {{ sub.student.full_name }}</td>
-    <td>{{ sub.description }}</td>
+    <td>{{ sub.get_category_display }}</td>
+    <td>{{ sub.remarks }}</td>
+    <td>{{ sub.self_rating }}</td>
     <td><a href="{{ sub.file.url }}">下载</a></td>
-    <td><a href="{% url 'approve_submission' sub.id %}" class="btn">通过审核</a></td>
+    <td>
+        <form method="post" action="{% url 'approve_submission' sub.id %}">
+            {% csrf_token %}
+            <input type="number" name="approved_score" min="0" step="0.5" required>
+            <button type="submit" class="btn">通过审核</button>
+        </form>
+    </td>
 </tr>
 {% endfor %}

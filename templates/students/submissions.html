@@ -29,43 +29,44 @@
 
     <!-- 检查是否有提交记录 -->
     {% if submissions %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>描述</th>
-                    <th>文件</th>
-                    <th>提交时间</th>
-                    <th>审核状态</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 遍历并显示每一条提交记录 -->
-                {% for sub in submissions %}
-                <tr>
-                    <td>{{ sub.id }}</td>
-                    <td>{{ sub.description|default:"(无描述)" }}</td>
-                    <td>
-                        <!-- 如果有文件，则提供下载链接 -->
-                        {% if sub.file %}
-                            <a href="{{ sub.file.url }}" target="_blank">下载查看</a>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
-                    <td>{{ sub.approved|yesno:"已通过,待审核" }}</td>
-                    <td>
-                        <!-- 删除按钮 -->
-                        <a href="{% url 'delete_submission' sub.id %}" class="btn btn-sm btn-danger">
-                            删除
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>加分项类型</th>
+                <th>备注</th>
+                <th>文件</th>
+                <th>自评加分</th>
+                <th>审核状态</th>
+                <th>审核加分</th>
+                <th>提交时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in submissions %}
+            <tr>
+                <td>{{ sub.id }}</td>
+                <td>{{ sub.get_category_display }}</td>
+                <td>{{ sub.remarks|default:"(无)" }}</td>
+                <td>
+                    {% if sub.file %}
+                        <a href="{{ sub.file.url }}" target="_blank">下载查看</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ sub.self_rating }}</td>
+                <td>{{ sub.approved|yesno:"已通过,待审核" }}</td>
+                <td>{{ sub.approved_score|default:"-" }}</td>
+                <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
+                <td>
+                    <a href="{% url 'delete_submission' sub.id %}" class="btn btn-sm btn-danger">
+                        删除
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     {% else %}
         <!-- 如果没有提交记录，则显示提示信息 -->
         <p>您还没有提交任何资料。</p>

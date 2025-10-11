@@ -45,9 +45,18 @@ class ProfileForm(ModelForm):
 # 学生提交表单
 class SubmissionForm(ModelForm):
     class Meta:
-        # 表单的元数据配置。
+        """表单的元数据配置。"""
         model = Submission
-        fields = ['description', 'file']
+        fields = ['category', 'remarks', 'file', 'self_rating']
+        widgets = {
+            'remarks': forms.Textarea(attrs={'rows': 3, 'placeholder': '请填写相关说明或证明信息'}),
+            'self_rating': forms.NumberInput(attrs={'min': 0, 'step': 0.5, 'placeholder': '请填写自评分数'}),
+        }
+        labels = {
+            'category': '加分项类型',
+            'remarks': '备注说明',
+            'self_rating': '自评加分',
+        }
 
 
 # 用户注册

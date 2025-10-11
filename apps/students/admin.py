@@ -17,5 +17,5 @@ class StudentProfileAdmin(admin.ModelAdmin):
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     """学生提交模型的Admin配置。"""
-    list_display = ('id', 'student', 'description', 'approved', 'timestamp')
-    list_filter = ('approved',)
+    list_display = ('id', 'student', 'category', 'self_rating', 'approved', 'approved_score', 'timestamp')
+    list_filter = ('approved', 'category')

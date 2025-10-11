@@ -7,6 +7,7 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 from students.models import StudentProfile, Submission
 
+
 class CounselorRegistrationForm(forms.Form):
     employee_id = forms.CharField(label='工号', max_length=20)
     full_name = forms.CharField(label='姓名', max_length=100)
@@ -24,6 +25,7 @@ class CounselorRegistrationForm(forms.Form):
         cleaned_data = super().clean()
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
             self.add_error('password2', '两次密码不一致')
+
 
 def counselor_register(request):
     if request.method == 'POST':
@@ -44,6 +46,7 @@ def counselor_register(request):
     else:
         form = CounselorRegistrationForm()
     return render(request, 'counselors/register.html', {'form': form})
+
 
 def counselor_login(request):
     if request.method == 'POST':
@@ -85,6 +88,7 @@ def review_submissions(request):
         'submissions': submissions
     })
 
+
 @login_required
 def approve_submission(request, submission_id):
     """审核通过学生提交的材料"""
@@ -92,8 +96,10 @@ def approve_submission(request, submission_id):
         return redirect('login')
 
     submission = get_object_or_404(Submission, id=submission_id)
-    submission.approved = True
-    submission.save()
+    if request.method == 'POST':
+        submission.approved = True
+        submission.approved_score = request.POST.get('approved_score')
+        submission.save()
     return redirect('review_submissions')
 
 
