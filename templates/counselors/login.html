@@ -9,7 +9,11 @@
 <body>
     <div class="login-container">
         <h2>辅导员登录</h2>
-
+        <div class="back-link" style="margin-bottom: 15px; text-align: left;">
+            <a href="{% url 'root' %}" style="color: #4a90e2; text-decoration: none;">
+                &larr; 返回登录选择
+            </a>
+        </div>
         {% if error %}
             <div class="error-message">{{ error }}</div>
         {% endif %}
