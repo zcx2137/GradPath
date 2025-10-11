@@ -1,6 +1,4 @@
-"""GradeTeach项目的URL配置。
-此文件是项目的主URL配置文件，负责将URL请求分发到各个应用。
-"""
+# GradeTeach项目的URL配置。
 
 from django.contrib import admin
 from django.urls import path, include

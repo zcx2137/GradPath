@@ -1,7 +1,4 @@
-"""学生应用的URL配置。
-
-此文件定义了学生应用的所有URL路由。
-"""
+# 学生应用的URL配置。
 
 from django.urls import path
 from . import views

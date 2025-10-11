@@ -1,6 +1,4 @@
-"""学生应用的模型定义。
-此文件定义了与学生相关的数据库模型，例如学生档案。
-"""
+# 学生应用的模型定义。
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -18,12 +16,27 @@ class StudentProfile(models.Model):
     )
     # 学生属性
     full_name = models.CharField("姓名", max_length=100, blank=True)
-    student_id = models.CharField("学号", max_length=20, unique=True, validators=[RegexValidator(regex=r'^\d{8,20}$', message='学号必须是8-20位数字')])
+    student_id = models.CharField("学号", max_length=20, unique=True,
+                                  validators=[RegexValidator(regex=r'^\d{8,20}$', message='学号必须是8-20位数字')])
+    grade = models.CharField("年级", max_length=20, blank=True)
+    college = models.CharField("学院", max_length=100, blank=True)
+    department = models.CharField("系别", max_length=100, blank=True)
     major = models.CharField("专业", max_length=100, blank=True)
     enrollment_year = models.PositiveIntegerField("入学年份", null=True, blank=True, help_text="例如：2023")
-    college = models.CharField("学院", max_length=100, blank=True)
-    phone = models.CharField("手机号", max_length=11,  blank=True, help_text="请输入11位手机号码")
-    email = models.EmailField("邮箱", blank=True, unique=True, help_text="请输入有效的邮箱地址")
+
+    GENDER_CHOICES = [
+        ('M', '男'),
+        ('F', '女'),
+        ('O', '其他'),
+    ]
+    gender = models.CharField("性别", max_length=1, choices=GENDER_CHOICES, blank=True)
+    ethnicity = models.CharField("民族", max_length=50, blank=True)
+    political_status = models.CharField("政治面貌", max_length=50, blank=True)
+    id_card = models.CharField("身份证号", max_length=18, blank=True,
+                               validators=[RegexValidator(regex=r'^\d{17}[\dXx]$', message='请输入有效的身份证号')])
+
+    phone = models.CharField("手机号", max_length=11, blank=True, help_text="请输入11位手机号码")
+    email = models.EmailField("邮箱", blank=True, help_text="请输入有效的邮箱地址")
 
     def __str__(self):
         return self.full_name or self.student_id or str(self.user)
@@ -31,7 +44,6 @@ class StudentProfile(models.Model):
 
 # 学生提交信息
 class Submission(models.Model):
-    """学生提交的模型。用于存储学生提交的作业或文件信息。"""
     # 预设加分项类型选项
     AWARD_PAPER = 'award_paper'
     COMPETITION = 'competition'

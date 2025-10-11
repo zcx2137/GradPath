@@ -36,16 +36,22 @@ class StudentRegistrationForm(forms.Form):
 
 # 学生档案表单
 class ProfileForm(ModelForm):
+
     class Meta:
-        # 表单的元数据配置
         model = StudentProfile
-        fields = ['full_name', 'student_id', 'major', 'enrollment_year', 'college', 'phone', 'email']
+        fields = [
+            'full_name', 'student_id', 'grade', 'college',
+            'department', 'major', 'enrollment_year',
+
+            'gender', 'ethnicity', 'political_status', 'id_card',
+
+            'phone', 'email'
+        ]
 
 
 # 学生提交表单
 class SubmissionForm(ModelForm):
     class Meta:
-        """表单的元数据配置。"""
         model = Submission
         fields = ['category', 'remarks', 'file', 'self_rating']
         widgets = {
@@ -121,14 +127,6 @@ def index(request):
 @login_required
 def profile(request):
     """显示和处理用户个人资料的更新。
-    此视图要求用户必须登录。
-    GET请求时，显示一个包含当前用户信息的表单。
-    POST请求时，验证并保存表单数据，然后刷新页面。
-    如果当前用户没有关联的StudentProfile，则会引发Http404异常。
-    Args:
-        request: Django的HttpRequest对象。
-    Returns:
-        一个HttpResponse对象，渲染个人资料页面。
     """
     # 获取当前登录用户的 Profile，如不存在则报404
     try:
@@ -153,15 +151,6 @@ def profile(request):
 @login_required
 def upload(request):
     """处理文件上传请求。
-    要求用户必须登录。
-    GET请求时，显示一个空的文件上传表单。
-    POST请求时，验证并保存表单数据（包括文件），
-    并将新创建的提交记录与当前登录用户关联起来，
-    然后重定向到提交记录页面。
-    Args:
-        request: Django的HttpRequest对象。
-    Returns:
-        一个HttpResponse对象，渲染上传页面或重定向到提交记录页面。
     """
     # 获取当前用户的Profile，后续用于关联Submission
     profile = request.user.profile
