@@ -10,4 +10,5 @@ urlpatterns = [
     path('approve/<int:submission_id>/', views.approve_submission, name='approve_submission'),
     path('reject/<int:submission_id>/', views.reject_submission, name='reject_submission'),
     path('students/', views.view_all_students, name='view_all_students'),
+    path('set-score/<int:student_id>/', views.set_academic_score, name='set_academic_score'),
 ]

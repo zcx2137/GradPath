@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>设置学业成绩</title>
+</head>
+<body>
+    <div class="nav">
+        <a href="{% url 'view_all_students' %}">返回学生列表</a>
+        <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
+    </div>
+
+    <h2>设置 {{ student.full_name }} ({{ student.student_id }}) 的学业成绩</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="academic_score">学业成绩：</label>
+            <input type="number" name="academic_score" id="academic_score" 
+                   step="0.1" min="0" max="100" 
+                   value="{{ student.academic_score|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label>当前材料加分：</label>
+            <span>{{ student.material_score }}</span>
+        </div>
+        <button type="submit" class="btn btn-success">保存</button>
+    </form>
+</body>
+</html>

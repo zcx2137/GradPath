@@ -1,4 +1,5 @@
 # app/counselors/views.py
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 from students.models import StudentProfile, Submission
 from django.contrib.auth import logout
+from decimal import Decimal, InvalidOperation
 
 
 # 辅导员注册表单
@@ -114,6 +116,11 @@ def approve_submission(request, submission_id):
         submission.approved = True
         submission.approved_score = request.POST.get('approved_score')
         submission.save()
+        # 更新学生的材料总分
+        student = submission.student
+        approved_submissions = Submission.objects.filter(student=student, approved=True)
+        student.material_score = sum(sub.approved_score or 0 for sub in approved_submissions)
+        student.save()  # 自动重新计算总分
     return redirect('review_submissions')
 
 
@@ -142,4 +149,44 @@ def view_all_students(request):
     students = StudentProfile.objects.all().select_related('user')
     return render(request, 'counselors/all_students.html', {
         'students': students
+    })
+
+
+# 设置学生学业成绩
+from decimal import Decimal, InvalidOperation  # 顶部添加导入
+
+
+@login_required
+def set_academic_score(request, student_id):
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    student = get_object_or_404(StudentProfile, id=student_id)
+
+    if request.method == 'POST':
+        # 处理表单提交的数据
+        score_str = request.POST.get('academic_score', '').strip()
+        if score_str:
+            try:
+                # 将字符串转换为Decimal类型
+                academic_score = Decimal(score_str)
+                student.academic_score = academic_score
+
+                # 重新计算材料加分
+                approved_submissions = Submission.objects.filter(
+                    student=student,
+                    approved=True
+                )
+                # 确保加分总和也是Decimal类型
+                material_total = sum(Decimal(sub.approved_score or 0) for sub in approved_submissions)
+                student.material_score = material_total
+
+                student.save()  # 触发save方法自动计算总分
+                messages.success(request, "学业成绩设置成功")
+            except InvalidOperation:
+                messages.error(request, "请输入有效的数字")
+        return redirect('view_all_students')
+
+    return render(request, 'counselors/set_academic_score.html', {
+        'student': student
     })

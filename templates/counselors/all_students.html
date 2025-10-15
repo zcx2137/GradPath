@@ -23,7 +23,10 @@
             <th>姓名</th>
             <th>学院</th>
             <th>专业</th>
-            <th>入学年份</th>
+            <th>学业成绩</th>
+            <th>材料加分</th>
+            <th>总分</th>
+            <th>操作</th>
         </tr>
         {% for student in students %}
         <tr>
@@ -31,10 +34,17 @@
             <td>{{ student.full_name }}</td>
             <td>{{ student.college }}</td>
             <td>{{ student.major }}</td>
-            <td>{{ student.enrollment_year|default:"-" }}</td>
+            <td>{{ student.academic_score|default:"未设置" }}</td>
+            <td>{{ student.material_score }}</td>
+            <td>{{ student.total_score|default:"-" }}</td>
+            <td>
+                <a href="{% url 'set_academic_score' student.id %}" class="btn btn-primary">
+                    设置成绩
+                </a>
+            </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5">暂无学生数据</td></tr>
+        <tr><td colspan="8">暂无学生数据</td></tr>
         {% endfor %}
     </table>
 

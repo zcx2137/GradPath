@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from decimal import Decimal
 
 
 # 学生档案
@@ -38,8 +39,44 @@ class StudentProfile(models.Model):
     phone = models.CharField("手机号", max_length=11, blank=True, help_text="请输入11位手机号码")
     email = models.EmailField("邮箱", blank=True, help_text="请输入有效的邮箱地址")
 
+    academic_score = models.DecimalField(
+        "学业成绩",
+        max_digits=5,
+        decimal_places=1,
+        null=True,
+        blank=True
+    )
+    material_score = models.DecimalField(
+        "材料加分",
+        max_digits=5,
+        decimal_places=1,
+        default=0
+    )
+    total_score = models.DecimalField(
+        "总分",
+        max_digits=5,
+        decimal_places=1,
+        null=True,
+        blank=True
+    )
+    score_ratio = models.DecimalField(
+        "学业成绩换算比例",
+        max_digits=3,
+        decimal_places=2,
+        default=0.7,  # 默认70%比例
+        help_text="例如：0.7表示学业成绩占70%"
+    )
+
     def __str__(self):
         return self.full_name or self.student_id or str(self.user)
+
+    def save(self, *args, **kwargs):
+        # 自动计算总分：学业成绩×比例 + 材料加分
+        if self.academic_score is not None and self.score_ratio is not None:
+            # 显式转换为Decimal确保类型一致
+            self.total_score = Decimal(self.academic_score) * Decimal(self.score_ratio) + Decimal(
+                self.material_score or 0)
+        super().save(*args, **kwargs)
 
 
 # 学生提交信息

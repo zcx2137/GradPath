@@ -158,7 +158,7 @@
                                readonly>
                     </div>
                     <div class="form-group">
-                        {{ form.grade.label_tag }} {{ form.grade }}
+                        {{ form.enrollment_year.label_tag }} {{ form.enrollment_year }}
                     </div>
                 </div>
                 <div class="form-row">
@@ -220,6 +220,28 @@
             </div>
             <hr>
             <button type="submit" class="submit-btn">保存</button>
+            
+            {# 学业成绩等信息临时存放在个人信息页 #}
+            <div class="divider"></div>
+            <div class="profile-module">
+                <h3 class="module-title">成绩信息</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>学业成绩：</label>
+                        <input type="text" value="{{ profile.academic_score|default:'未设置' }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>材料加分：</label>
+                        <input type="text" value="{{ profile.material_score }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>总分：</label>
+                        <input type="text" value="{{ profile.total_score|default:'-' }}" readonly>
+                    </div>
+                </div>
+            </div>
+            {# 学业成绩等信息临时存放在个人信息页 #}
+            
         </form>
     </div>
 </body>

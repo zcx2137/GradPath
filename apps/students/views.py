@@ -126,8 +126,6 @@ def index(request):
 
 @login_required
 def profile(request):
-    """显示和处理用户个人资料的更新。
-    """
     # 获取当前登录用户的 Profile，如不存在则报404
     try:
         profile = request.user.profile
