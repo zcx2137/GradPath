@@ -140,6 +140,51 @@
             font-weight: 500;
         }
 
+        /* 成绩排名样式优化 */
+        .rank-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rank-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .rank-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .rank-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1e6bdd;
+        }
+
+        .rank-hint {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .rank-pending {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* 悬停效果增强 */
+        .function-btn:hover .rank-value {
+            color: #165dff;
+            transform: scale(1.05);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
         /* 动态信息列表区 */
         .info-section {
             background-color: #e9ecef;
@@ -200,7 +245,19 @@
             <div class="button-row">
                 <a href="#" class="function-btn large">
                     <div class="btn-icon">📈</div>
-                    <div class="btn-text">成绩排名</div>
+                    <div class="btn-text rank-container">
+                        <span class="rank-title">成绩排名</span>
+                        {% if user.profile.total_score %}
+                            {% with rank_data=user.profile.get_rank %}
+                                <div class="rank-info">
+                                    <span class="rank-value">{{ rank_data.0 }}/{{ rank_data.1 }}</span>
+                                    <span class="rank-hint">(排名/总人数)</span>
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            <span class="rank-pending">待评分</span>
+                        {% endif %}
+                    </div>
                 </a>
                 <a href="{% url 'submissions' %}" class="function-btn large">
                     <div class="btn-icon">📋</div>

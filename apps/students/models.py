@@ -70,6 +70,15 @@ class StudentProfile(models.Model):
     def __str__(self):
         return self.full_name or self.student_id or str(self.user)
 
+    def get_rank(self):
+        """计算学生的排名（按总分降序）"""
+        all_students = StudentProfile.objects.exclude(total_score__isnull=True)
+        total_count = all_students.count()
+
+        # 总分高于当前学生的人数 + 1 就是排名
+        higher_count = all_students.filter(total_score__gt=self.total_score).count()
+        return (higher_count + 1, total_count)
+
     def save(self, *args, **kwargs):
         # 自动计算总分：学业成绩×比例 + 材料加分
         if self.academic_score is not None and self.score_ratio is not None:
