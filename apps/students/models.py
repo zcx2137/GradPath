@@ -39,32 +39,51 @@ class StudentProfile(models.Model):
     phone = models.CharField("手机号", max_length=11, blank=True, help_text="请输入11位手机号码")
     email = models.EmailField("邮箱", blank=True, help_text="请输入有效的邮箱地址")
 
-    academic_score = models.DecimalField(
-        "学业成绩",
+    academic_comprehensive_score = models.DecimalField(
+        "学业综合成绩",  # 辅导员可设置
         max_digits=5,
         decimal_places=1,
         null=True,
         blank=True
     )
-    material_score = models.DecimalField(
-        "材料加分",
+    academic_expertise_score = models.DecimalField(
+        "学术专长成绩",  # 来自学术类材料加分
+        max_digits=5,
+        decimal_places=1,
+        default=0
+    )
+    comprehensive_performance_score = models.DecimalField(
+        "综合表现成绩",  # 来自综合类材料加分
         max_digits=5,
         decimal_places=1,
         default=0
     )
     total_score = models.DecimalField(
-        "总分",
+        "总成绩",
         max_digits=5,
         decimal_places=1,
         null=True,
         blank=True
     )
-    score_ratio = models.DecimalField(
-        "学业成绩换算比例",
+
+    # 成绩权重设置（可根据实际需求调整默认值）
+    academic_comprehensive_ratio = models.DecimalField(
+        "学业综合成绩权重",
         max_digits=3,
         decimal_places=2,
-        default=0.7,  # 默认70%比例
-        help_text="例如：0.7表示学业成绩占70%"
+        default=0.6  # 60%
+    )
+    academic_expertise_ratio = models.DecimalField(
+        "学术专长成绩权重",
+        max_digits=3,
+        decimal_places=2,
+        default=0.2  # 20%
+    )
+    comprehensive_performance_ratio = models.DecimalField(
+        "综合表现成绩权重",
+        max_digits=3,
+        decimal_places=2,
+        default=0.2  # 20%
     )
 
     def __str__(self):
@@ -80,11 +99,15 @@ class StudentProfile(models.Model):
         return (higher_count + 1, total_count)
 
     def save(self, *args, **kwargs):
-        # 自动计算总分：学业成绩×比例 + 材料加分
-        if self.academic_score is not None and self.score_ratio is not None:
-            # 显式转换为Decimal确保类型一致
-            self.total_score = Decimal(self.academic_score) * Decimal(self.score_ratio) + Decimal(
-                self.material_score or 0)
+        # 自动计算总成绩：各项成绩 × 对应权重之和
+        if (self.academic_comprehensive_score is not None and
+                self.academic_expertise_ratio is not None and
+                self.comprehensive_performance_ratio is not None):
+            self.total_score = (
+                    Decimal(self.academic_comprehensive_score) * self.academic_comprehensive_ratio +
+                    Decimal(self.academic_expertise_score) * self.academic_expertise_ratio +
+                    Decimal(self.comprehensive_performance_score) * self.comprehensive_performance_ratio
+            )
         super().save(*args, **kwargs)
 
 

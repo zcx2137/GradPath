@@ -1,2 +1,70 @@
-<h1>加分细则</h1>
-<a href="{% url 'index' %}">返回主页</a>
+{% extends 'students/base.html' %}
+{% load static %}
+
+{% block title %}加分细则查看 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/student_rules.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- 加分细则内容 -->
+    <div class="rules-container">
+        <div class="rules-header">
+            <h1 class="rules-title">加分细则查看</h1>
+            <div class="user-info">
+                <span>{{ user.username|default:"用户名" }}</span>
+            </div>
+        </div>
+        
+        <div class="rule-cards-container">
+            <div class="rule-card">
+                <div class="rule-card-header">
+                    <div class="rule-card-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3 class="rule-card-title">科研成果</h3>
+                </div>
+                <div class="rule-card-content">
+                    查看科研成果相关的加分规则和标准
+                </div>
+            </div>
+            
+            <div class="rule-card">
+                <div class="rule-card-header">
+                    <div class="rule-card-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="rule-card-title">学业竞赛</h3>
+                </div>
+                <div class="rule-card-content">
+                    查看学业竞赛相关的加分规则和标准
+                </div>
+            </div>
+            
+            <div class="rule-card">
+                <div class="rule-card-header">
+                    <div class="rule-card-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="rule-card-title">创新创业训练</h3>
+                </div>
+                <div class="rule-card-content">
+                    查看创新创业训练相关的加分规则和标准
+                </div>
+            </div>
+            
+            <div class="rule-card">
+                <div class="rule-card-header">
+                    <div class="rule-card-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="rule-card-title">综合表现加分</h3>
+                </div>
+                <div class="rule-card-content">
+                    查看综合表现相关的加分规则和标准
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>保研加分小助手 - 用户注册</title>
-    <link rel="stylesheet" href="../../static/login.css">
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}">
 </head>
 <body>
     <div class="register-container">
         <h2>注册新用户</h2>
-
         {% if form.errors %}
             <div class="error-message">
                 {% for field in form %}
