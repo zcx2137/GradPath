@@ -1,0 +1,117 @@
+.add-item-container {
+  max-width: 900px;
+  margin: 24px auto;
+}
+
+.add-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.add-item-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.form-section + .form-section { margin-top: 16px; }
+
+.upload-area {
+  border: 2px dashed #cfd3d7;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.upload-area:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.upload-area.active {
+  border-color: #007bff;
+  background-color: #e7f3ff;
+}
+
+/* 完全隐藏文件输入框 */
+#id_file {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.upload-icon { 
+  font-size: 2rem; 
+  color: #6c757d; 
+  margin-bottom: 8px; 
+}
+
+.upload-text { 
+  font-weight: 600; 
+  margin-bottom: 6px; 
+}
+
+.upload-hint { 
+  font-size: 0.9rem; 
+  color: #888; 
+}
+
+/* 文件名称显示样式 */
+.file-name-display {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #e7f3ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 4px;
+  color: #0066cc;
+  font-weight: 500;
+  display: none;
+}
+
+/* 表单字段样式 */
+.form-section select,
+.form-section input:not([type="file"]),
+.form-section textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-section select:focus,
+.form-section input:focus,
+.form-section textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.submit-section {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.submit-button {
+  padding: 10px 30px;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* 表单错误状态 */
+.form-section select.error,
+.form-section input.error,
+.form-section textarea.error {
+  border-color: #dc3545;
+}

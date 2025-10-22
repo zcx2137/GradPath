@@ -1,0 +1,202 @@
+/* 基础样式 */
+:root {
+    --primary-color: #3498db;
+    --light-bg: #f5f7fa;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.navbar {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+.footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    color: #6c757d;
+    border-top: 1px solid #eee;
+}
+
+/* 通用卡片样式 */
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+.card-body {
+    padding: 1.5rem;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary:hover {
+    background-color: #2980b9;
+    color: white;
+}
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #dee2e6;
+}
+
+/* 我的申请详情页面样式 */
+.applications-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.applications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.applications-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+/* 筛选工具栏 */
+.filter-toolbar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    min-width: 120px;
+}
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.search-input:focus {
+    outline: none;
+    border-color: #1890ff;
+}
+/* 表格样式 */
+.applications-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.applications-table th {
+    background: #fafafa;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+}
+.applications-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+/* 状态标签 */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.status-pending {
+    background: #fff7e6;
+    color: #fa8c16;
+}
+.status-approved {
+    background: #f6ffed;
+    color: #52c41a;
+}
+.status-rejected {
+    background: #fff2f0;
+    color: #ff4d4f;
+}
+/* 操作按钮 */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+/* 空状态 */
+.empty-table {
+    text-align: center;
+    padding: 60px 20px;
+}
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .applications-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    .filter-toolbar {
+        flex-direction: column;
+    }
+    .filter-select,
+    .search-input {
+        min-width: 100%;
+    }
+    .applications-table {
+        display: block;
+        overflow-x: auto;
+    }
+}

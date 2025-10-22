@@ -1,162 +1,124 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <title>我的提交记录</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
-        }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        th, td {
-            border: 1px solid #e0e0e0;
-            padding: 12px 15px;
-            text-align: left;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        tr:hover {
-            background-color: #f0f7ff;
-        }
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        a:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
-        .btn {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #c0392b;
-            text-decoration: none;
-        }
-        .navigation {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .no-submissions {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>我的提交记录</h2>
+{% extends 'students/base.html' %}
+{% load static %}
 
-        <!-- 检查是否有提交记录 -->
-        {% if submissions %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>加分项类型</th>
-                        <th>备注</th>
-                        <th>文件</th>
-                        <th>自评加分</th>
-                        <th>审核状态</th>
-                        <th>审核加分</th>
-                        <th>提交时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sub in submissions %}
-                    <tr>
-                        <td>{{ sub.id }}</td>
-                        <td>{{ sub.get_category_display }}</td>
-                        <td>{{ sub.remarks|default:"(无)" }}</td>
-                        <td>
-                            {% if sub.file %}
-                                <a href="{{ sub.file.url }}" target="_blank">下载查看</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>{{ sub.self_rating }}</td>
-                        <td>
-                            {% if sub.approved %}
-                                <span style="color: green;">已通过</span>
-                            {% elif sub.rejected %}
-                                <span style="color: red;">已驳回</span>
-                                {% if sub.reject_reason %}
-                                    <div style="font-size: 0.8em; color: #666;">理由: {{ sub.reject_reason }}</div>
-                                {% endif %}
-                            {% else %}
-                                <span style="color: orange;">待审核</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ sub.approved_score|default:"-" }}</td>
-                        <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
-                        <td>
-                            <a href="{% url 'delete_submission' sub.id %}" class="btn btn-danger">
-                                删除
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <!-- 如果没有提交记录，则显示提示信息 -->
-            <div class="no-submissions">
-                <p>您还没有提交任何资料。</p>
+{% block title %}我的提交记录{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/submissions.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- 我的申请详情内容 -->
+    <div class="applications-container">
+        <div class="applications-header">
+            <h1 class="applications-title">我的申请详情</h1>
+            <div class="user-info">
+                <span>{{ user.username|default:"用户名" }}</span>
             </div>
-        {% endif %}
+        </div>
+        
+        <!-- 筛选工具栏 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="filter-toolbar">
+                    <select class="filter-select">
+                        <option>选择状态</option>
+                        <option>待审核</option>
+                        <option>已通过</option>
+                        <option>已拒绝</option>
+                    </select>
+                    
+                    <select class="filter-select">
+                        <option>选择类别</option>
+                        <option>科研成果</option>
+                        <option>学业竞赛</option>
+                        <option>创新创业训练</option>
+                        <option>综合表现加分</option>
+                    </select>
+                    
+                    <input type="text" class="search-input" placeholder="搜索申请项目（暂未实现筛选和搜索功能）">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 申请列表 -->
+        <div class="card">
+            <div class="card-body">
+                <table class="applications-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>加分项类型</th>
+                            <th>备注</th>
+                            <th>文件</th>
+                            <th>自评加分</th>
+                            <th>状态</th>
+                            <th>审核加分</th>
+                            <th>提交时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if submissions %}
+                            {% for sub in submissions %}
+                            <tr>
+                                <td>{{ sub.id }}</td>
+                                <td>{{ sub.get_category_display }}</td>
+                                <td>{{ sub.remarks|default:"(无)" }}</td>
+                                <td>
+                                    {% if sub.file %}
+                                        <a href="{{ sub.file.url }}" target="_blank" class="text-primary">下载查看</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ sub.self_rating }}</td>
+                                <td>
+                                    {% if sub.approved %}
+                                        <span class="status-badge status-approved">已通过</span>
+                                    {% elif sub.rejected %}
+                                        <span class="status-badge status-rejected">已驳回</span>
+                                        {% if sub.reject_reason %}
+                                            <div style="font-size: 0.8em; color: #666; margin-top: 4px;">理由: {{ sub.reject_reason }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="status-badge status-pending">待审核</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ sub.approved_score|default:"-" }}</td>
+                                <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{% url 'delete_submission' sub.id %}" class="btn-primary btn-sm">
+                                            删除
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <!-- 空状态 -->
+                            <tr>
+                                <td colspan="9" class="empty-table">
+                                    <div class="empty-state">
+                                        <i class="fas fa-file-alt"></i>
+                                        <h4>暂无申请记录</h4>
+                                        <p>您还没有提交任何加分申请</p>
+                                        <a href="{% url 'upload' %}" class="btn btn-primary mt-2">提交新申请</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        <div class="navigation">
+        <div class="navigation mt-4">
             <p>
-                <!-- 导航链接 -->
-                <a href="{% url 'upload' %}">上传新资料</a> |
-                <a href="{% url 'index' %}">返回主页</a>
+                <a href="{% url 'upload' %}" class="btn-primary">上传新资料</a>
+                <a href="{% url 'index' %}" class="btn-primary ml-2">返回主页</a>
             </p>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

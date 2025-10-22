@@ -10,7 +10,6 @@ from students.models import StudentProfile, Submission
 from django.contrib.auth import logout
 from decimal import Decimal, InvalidOperation
 
-
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
     employee_id = forms.CharField(label='工号', max_length=20)
@@ -116,11 +115,22 @@ def approve_submission(request, submission_id):
         submission.approved = True
         submission.approved_score = request.POST.get('approved_score')
         submission.save()
-        # 更新学生的材料总分
+
+        # 根据材料类型更新对应成绩
         student = submission.student
-        approved_submissions = Submission.objects.filter(student=student, approved=True)
-        student.material_score = sum(sub.approved_score or 0 for sub in approved_submissions)
-        student.save()  # 自动重新计算总分
+        score = Decimal(submission.approved_score or 0)
+
+        # 学术类材料计入学术专长成绩
+        academic_categories = ['thesis', 'competition', 'research', 'other_academic']
+        # 综合类材料计入综合表现成绩
+        comprehensive_categories = ['volunteer', 'leadership', 'social_practice', 'other_comprehensive']
+
+        if submission.category in academic_categories:
+            student.academic_expertise_score += score
+        elif submission.category in comprehensive_categories:
+            student.comprehensive_performance_score += score
+
+        student.save()  # 自动更新总成绩
     return redirect('review_submissions')
 
 
@@ -152,10 +162,6 @@ def view_all_students(request):
     })
 
 
-# 设置学生学业成绩
-from decimal import Decimal, InvalidOperation  # 顶部添加导入
-
-
 @login_required
 def set_academic_score(request, student_id):
     if not hasattr(request.user, 'counselor_profile'):
@@ -164,25 +170,14 @@ def set_academic_score(request, student_id):
     student = get_object_or_404(StudentProfile, id=student_id)
 
     if request.method == 'POST':
-        # 处理表单提交的数据
-        score_str = request.POST.get('academic_score', '').strip()
+        # 仅处理学业综合成绩
+        score_str = request.POST.get('academic_comprehensive_score', '').strip()
         if score_str:
             try:
-                # 将字符串转换为Decimal类型
                 academic_score = Decimal(score_str)
-                student.academic_score = academic_score
-
-                # 重新计算材料加分
-                approved_submissions = Submission.objects.filter(
-                    student=student,
-                    approved=True
-                )
-                # 确保加分总和也是Decimal类型
-                material_total = sum(Decimal(sub.approved_score or 0) for sub in approved_submissions)
-                student.material_score = material_total
-
-                student.save()  # 触发save方法自动计算总分
-                messages.success(request, "学业成绩设置成功")
+                student.academic_comprehensive_score = academic_score
+                student.save()  # 自动触发总成绩计算
+                messages.success(request, "学业综合成绩设置成功")
             except InvalidOperation:
                 messages.error(request, "请输入有效的数字")
         return redirect('view_all_students')
