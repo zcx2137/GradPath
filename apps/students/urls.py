@@ -15,6 +15,8 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     # 个人资料页
     path('profile/', views.profile, name='profile'),
+    # 排名页
+    path('ranking/', views.ranking, name='ranking'),
     # 上传资料页
     path('upload/', views.upload, name='upload'),
     # 状态查看页

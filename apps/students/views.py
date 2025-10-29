@@ -147,6 +147,39 @@ def profile(request):
 
 
 @login_required
+def ranking(request):
+    """学生成绩排名页面视图"""
+    try:
+        # 获取当前登录学生的档案
+        profile = request.user.profile
+
+        # 获取排名数据
+        rank_data = profile.get_rank()
+        my_rank = f"{rank_data[0]}/{rank_data[1]}" if rank_data[0] else "-"
+
+        # 获取各项成绩
+        context = {
+            'my_rank': my_rank,
+            'academic_score': profile.academic_comprehensive_score or "-",
+            'research_score': profile.academic_expertise_score,
+            'performance_score': profile.comprehensive_performance_score,
+            'total_score': profile.total_score or "-"
+        }
+
+    except StudentProfile.DoesNotExist:
+        # 处理没有个人资料的情况
+        context = {
+            'my_rank': "-",
+            'academic_score': "-",
+            'research_score': "-",
+            'performance_score': "-",
+            'total_score': "-"
+        }
+
+    return render(request, 'students/ranking.html', context)
+
+
+@login_required
 def upload(request):
     """处理文件上传请求。
     """
