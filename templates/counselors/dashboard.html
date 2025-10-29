@@ -1,6 +1,91 @@
-<h1>辅导员控制面板</h1>
-<p>待审核材料: {{ pending_count }}</p>
-<p>总学生数: {{ total_students }}</p>
-<a href="{% url 'review_submissions' %}">处理待审核材料</a>
-<a href="{% url 'view_all_students' %}">查看所有学生</a>
-<a href="{% url 'counselor_logout' %}" style="margin-left: 10px; color: #e74c3c;">退出登录</a>
+{% extends 'counselors/base.html' %}
+{% load static %}
+{% block title %}辅导员端 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'CSS/counselor/dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1 class="page-title">保研加分小助手</h1>
+        <div class="user-info">
+            <span class="username">{{ user.username|default:"辅导员用户名" }}</span>
+        </div>
+    </div>
+
+    <!-- 统计卡片网格 -->
+    <div class="stats-grid">
+        <!-- 待审核申请总数 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">待审核申请总数</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ pending_count|default:"-" }}</div>
+            <p class="stat-description">需要您审核的加分申请</p>
+            <a href="{% url 'review_submissions' %}" class="stat-action">
+                <span>立即处理</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- 管理加分细则 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">管理加分细则</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ rules_count|default:"-" }}</div>
+            <p class="stat-description">当前生效的加分规则</p>
+            <a href="{% url 'counselor_rules' %}" class="stat-action">
+                <span>管理规则</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- 本周处理数 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">本周处理数</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ handled_this_week|default:"-" }}</div>
+            <p class="stat-description">本周已处理的申请数量</p>
+            <a href="{% url 'view_all_students' %}" class="stat-action">
+                <span>查看最终排名</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- 最新待审核申请 -->
+    <div class="pending-section">
+        <div class="section-header">
+            <h2 class="section-title">最新待审核申请</h2>
+            <a href="#" class="view-all">
+                <span>查看全部</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="pending-card">
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list empty-icon"></i>
+                <h4 class="empty-title">暂无待审核申请</h4>
+                <p class="empty-description">学生提交的申请将在这里显示</p>
+            </div>
+        </div>
+    </div>
+    
+        
+    <br>
+    <a href="{% url 'login' %}"><span>退出登录（暂放此处）</span></a>
+    
+{% endblock %}

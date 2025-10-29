@@ -1,39 +1,77 @@
+{% extends 'counselors/base.html' %}
 
-    <div class="nav">
-        <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
-        <a href="{% url 'counselor_logout' %}" style="margin-left: 10px; color: #e74c3c;">退出登录</a>
+{% block title %}待审核申请 - 保研加分小助手{% endblock %}
+
+{% block content %}
+    
+    <div class="page-header">
+        <h1 class="page-title">待审核申请</h1>
+        <div>
+                <a href="{% url 'counselor_dashboard' %}" class="btn btn-outline-secondary btn-sm">返回控制台</a>
+        </div>
     </div>
-    <br><hr>
 
-{% for sub in submissions %}
-<tr>
-    <td>{{ sub.id }}</td>
-    <td>{{ sub.student.student_id }} - {{ sub.student.full_name }}</td>
-    <td>{{ sub.get_category_display }}</td>
-    <td>{{ sub.remarks }}</td>
-    <td>{{ sub.self_rating }}</td>
-    <td>
-        {% if sub.file %}
-            <a href="{{ sub.file.url }}">下载</a>
-        {% else %}
-            无文件
-        {% endif %}
-    </td>
-    <td>
-        <!-- 通过审核表单 -->
-        <form method="post" action="{% url 'approve_submission' sub.id %}">
-            {% csrf_token %}
-            <input type="number" name="approved_score" min="0" step="0.5" required>
-            <button type="submit" class="btn btn-success">通过</button>
-        </form>
-
-        <!-- 驳回审核表单 -->
-        <form method="post" action="{% url 'reject_submission' sub.id %}" style="margin-top: 10px;">
-            {% csrf_token %}
-            <textarea name="reject_reason" placeholder="请输入驳回理由" required rows="2" style="width: 100%;"></textarea>
-            <button type="submit" class="btn btn-danger">驳回</button>
-        </form>
-    </td>
-</tr>
-    <br><br><br>
-{% endfor %}
+    <div class="card">
+        <div class="card-body">
+            {% if submissions %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">学生</th>
+                            <th scope="col">分类</th>
+                            <th scope="col">备注</th>
+                            <th scope="col">自评</th>
+                            <th scope="col">查看文件</th>
+                            <th scope="col">审核操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissions %}
+                        <tr>
+                            <!-- 表格数据 -->
+                            <td>{{ sub.id }}</td>
+                            <td>{{ sub.student.student_id }} - {{ sub.student.full_name }}</td>
+                            <td>{{ sub.get_category_display }}</td>
+                            <td>{{ sub.remarks }}</td>
+                            <td>{{ sub.self_rating }}</td>
+                            <td>
+                                {% if sub.file %}
+                                    <a href="{{ sub.file.url }}">查看</a>
+                                {% else %}
+                                    无文件
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- 通过审核表单 -->
+                                <form method="post" action="{% url 'approve_submission' sub.id %}">
+                                    {% csrf_token %}
+                                    <input type="number" name="approved_score" min="0" step="0.5" required>
+                                    <button type="submit" class="btn btn-success">通过</button>
+                                </form>
+                        
+                                <!-- 驳回审核表单 -->
+                                <form method="post" action="{% url 'reject_submission' sub.id %}" style="margin-top: 10px;">
+                                    {% csrf_token %}
+                                    <textarea name="reject_reason" placeholder="请输入驳回理由" required rows="2" style="width: 100%;"></textarea>
+                                    <button type="submit" class="btn btn-danger">驳回</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <!-- 循环空状态（理论上不会触发，因为外层已判断 submissions 存在）-->
+                        <tr>
+                            <td colspan="7" class="text-center">暂无数据</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <!-- 外层 if 空状态 -->
+                <p class="mb-0">暂无待审核申请</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

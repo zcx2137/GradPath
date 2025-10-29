@@ -1,0 +1,41 @@
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.stat-card:hover { transform: translateY(-5px); box-shadow: var(--hover-shadow); }
+.stat-value { font-size: 3rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+.stat-label { font-size: 1.1rem; font-weight: 600; color: var(--dark-text); }
+
+.transcript-section { margin-bottom: 40px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.section-title { font-size: 1.4rem; font-weight: 600; color: var(--dark-text); }
+.transcript-card { background: var(--white); border-radius: 12px; box-shadow: var(--card-shadow); padding: 24px; }
+.score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.score-item { display: flex; flex-direction: column; gap: 8px; }
+.score-label { font-size: 0.9rem; color: var(--gray-text); font-weight: 500; }
+.score-value { font-size: 1.2rem; font-weight: 600; color: var(--dark-text); padding: 12px; background-color: var(--light-bg); border-radius: 8px; text-align: center; }
+
+.submit-section { text-align: center; }
+.submit-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: var(--white); text-decoration: none; font-weight: 600;
+    padding: 14px 28px; border-radius: 8px; transition: all 0.3s ease; box-shadow: var(--card-shadow);
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: var(--hover-shadow); color: var(--white); text-decoration: none; }
+
+@media (max-width: 768px) {
+    .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .stats-grid { grid-template-columns: 1fr; gap: 18px; }
+    .score-grid { grid-template-columns: 1fr; gap: 16px; }
+}

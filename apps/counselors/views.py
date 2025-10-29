@@ -70,7 +70,6 @@ def counselor_login(request):
 # 辅导员退出登录
 @login_required
 def counselor_logout(request):
-    """辅导员退出登录"""
     # 验证是否为辅导员
     if hasattr(request.user, 'counselor_profile'):
         logout(request)
@@ -185,3 +184,13 @@ def set_academic_score(request, student_id):
     return render(request, 'counselors/set_academic_score.html', {
         'student': student
     })
+
+
+# 辅导员加分规则管理页面
+@login_required
+def counselor_rules(request):
+    # 验证是否为辅导员身份
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+    return render(request, 'counselors/rules.html')  # 渲染规则页面模板
+
