@@ -1,0 +1,90 @@
+{% extends 'counselors/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/counselor/edit_rule.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="form-header">
+            <a href="{% url 'rule_detail' rule.rule_type %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>返回详情</span>
+            </a>
+            <h1 class="form-title">{{ page_title }}</h1>
+        </div>
+
+        <form method="post" class="rule-form">
+            {% csrf_token %}
+            
+            <!-- 表单错误提示 -->
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- 表单字段 -->
+            <div class="form-group">
+                {{ form.rule_type.label_tag }}
+                {{ form.rule_type }}
+                {% if form.rule_type.errors %}
+                    <div class="field-error">{{ form.rule_type.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.item_name.label_tag }}
+                {{ form.item_name }}
+                {% if form.item_name.errors %}
+                    <div class="field-error">{{ form.item_name.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.score.label_tag }}
+                <div class="score-input-group">
+                    {{ form.score }}
+                    <span class="score-unit">分</span>
+                </div>
+                {% if form.score.errors %}
+                    <div class="field-error">{{ form.score.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="field-error">{{ form.description.errors.0 }}</div>
+                {% endif %}
+                <small class="field-hint">请详细描述加分条件、适用范围等信息</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.remark.label_tag }}
+                {{ form.remark }}
+                {% if form.remark.errors %}
+                    <div class="field-error">{{ form.remark.errors.0 }}</div>
+                {% endif %}
+                <small class="field-hint">可选：填写规则的特殊说明或注意事项</small>
+            </div>
+            
+            <!-- 提交按钮 -->
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'rule_detail' rule.rule_type %}'">
+                    取消
+                </button>
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i>
+                    保存修改
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

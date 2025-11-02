@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
-from .models import CounselorProfile
+from .models import CounselorProfile, Rule
 from django import forms
 from django.contrib.auth.decorators import login_required
 from students.models import StudentProfile, Submission
@@ -11,6 +11,8 @@ from django.contrib.auth import logout
 from decimal import Decimal, InvalidOperation
 from django.utils import timezone
 from datetime import timedelta
+from .forms import RuleForm
+from django.urls import reverse
 
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
@@ -208,8 +210,120 @@ def set_academic_score(request, student_id):
 # 辅导员加分规则管理页面
 @login_required
 def counselor_rules(request):
-    # 验证是否为辅导员身份
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
-    return render(request, 'counselors/rules.html')  # 渲染规则页面模板
+
+    # 获取所有规则并按类型分类
+    rules = Rule.objects.all()
+    context = {
+        'student_competition_rules': rules.filter(rule_type='student-competition'),
+        'research_achievement_rules': rules.filter(rule_type='research-achievement'),
+        'innovation_entrepreneurship_rules': rules.filter(rule_type='innovation-entrepreneurship'),
+        'comprehensive_performance_rules': rules.filter(rule_type='comprehensive-performance'),
+    }
+    return render(request, 'counselors/rules.html', context)
+
+
+@login_required
+def add_rule(request):
+    # 验证辅导员身份
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    if request.method == 'POST':
+        # 获取表单数据
+        rule_type = request.POST.get('rule_type')
+        rule_desc = request.POST.get('rule_desc')
+
+        # 验证数据
+        if not rule_type or not rule_desc:
+            messages.error(request, "请填写所有必填字段")
+            return render(request, 'counselors/add_newrules.html')
+
+        # 保存新规则
+        Rule.objects.create(
+            rule_type=rule_type,
+            description=rule_desc
+        )
+
+        messages.success(request, "加分规则添加成功")
+        return redirect('counselor_rules')  # 重定向回规则管理页
+
+    # GET请求展示表单
+    return render(request, 'counselors/add_newrules.html')
+
+
+# views.py
+def rule_detail(request, rule_type):
+    # 根据rule_type查询对应规则
+    rule_map = {
+        'student-competition': '学业竞赛',
+        'research-achievement': '科研成果',
+        'innovation-entrepreneurship': '创新创业训练',
+        'comprehensive-performance': '综合表现加分'
+    }
+
+    rules = Rule.objects.filter(rule_type=rule_type)
+    return render(request, 'counselors/rule_detail.html', {
+        'rules': rules,
+        'category_name': rule_map.get(rule_type, '规则详情'),
+        'rule_type': rule_type
+    })
+
+
+# 编辑已有规则的视图函数
+def edit_rule(request, rule_id):
+    # 获取要编辑的规则，不存在则返回404
+    rule = get_object_or_404(Rule, id=rule_id)
+
+    if request.method == 'POST':
+        # 绑定表单数据并验证
+        form = RuleForm(request.POST, instance=rule)
+        if form.is_valid():
+            # 保存更新（自动更新updated_at字段）
+            form.save()
+            messages.success(request, "规则已成功更新！")
+            # 重定向到该规则所属分类的详情页
+            return redirect('rule_detail', rule_type=rule.rule_type)
+        else:
+            messages.error(request, "表单数据有误，请检查后重新提交")
+    else:
+        # GET请求：初始化表单并填充当前规则数据
+        form = RuleForm(instance=rule)
+
+    # 渲染编辑页面
+    return render(request, 'counselors/edit_rule.html', {
+        'form': form,
+        'rule': rule,
+        'page_title': f"编辑规则：{rule.item_name}"
+    })
+
+
+# 删除规则的视图函数
+def delete_rule(request, rule_id):
+    rule = get_object_or_404(Rule, id=rule_id)
+    # 记录规则所属分类，用于删除后重定向
+    rule_type = rule.rule_type
+
+    if request.method == 'POST':
+        # 执行删除操作
+        rule.delete()
+        messages.success(request, "规则已成功删除")
+        # 重定向到所属分类的详情页
+        return redirect('rule_detail', rule_type=rule_type)
+
+    # 如果是GET请求，不允许直接访问删除页面，重定向到详情页
+    messages.error(request, "请通过确认弹窗删除规则")
+    return redirect('rule_detail', rule_type=rule_type)
+
+
+# 按规则类型分类查询
+def rules_management(request):
+    rules = {
+        'student_competition_rules': Rule.objects.filter(rule_type='student-competition'),
+        'research_achievement_rules': Rule.objects.filter(rule_type='research-achievement'),
+        'innovation_rules': Rule.objects.filter(rule_type='innovation-entrepreneurship'),
+        'comprehensive_rules': Rule.objects.filter(rule_type='comprehensive-performance'),
+    }
+    return render(request, 'counselors/rules.html', rules)
 

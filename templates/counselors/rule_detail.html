@@ -1,0 +1,146 @@
+{% extends 'counselors/base.html' %}
+{% load static %}
+
+{% block title %}{{ category_name }} - 规则详情 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/counselor/rule_detail.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- 页面导航与标题 -->
+    <div class="page-header">
+        <a href="{% url 'rules_management' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回规则列表</span>
+        </a>
+        <h1 class="page-title">{{ category_name }} 规则详情</h1>
+        <a href="{% url 'add_rule' %}?type={{ rule_type }}" class="add-rule-btn">
+            <i class="fas fa-plus"></i>
+            <span>添加规则</span>
+        </a>
+    </div>
+
+    <!-- 规则列表区域 -->
+    <div class="rules-container">
+        {% if rules %}
+            <div class="rules-list">
+                {% for rule in rules %}
+                    <div class="rule-item">
+                        <div class="rule-content">
+                            <div class="rule-header">
+                                <h3 class="rule-title">规则 #{{ rule.id }}</h3>
+                                <div class="rule-meta">
+                                    <span class="create-time">创建时间：{{ rule.created_at|date:"Y-m-d H:i" }}</span>
+                                    {% if rule.updated_at != rule.created_at %}
+                                        <span class="update-time">更新时间：{{ rule.updated_at|date:"Y-m-d H:i" }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="rule-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">加分项目：</span>
+                                    <span class="detail-value">{{ rule.item_name }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">加分标准：</span>
+                                    <span class="detail-value">{{ rule.description }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">加分分值：</span>
+                                    <span class="detail-value">{{ rule.score }} 分</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">备注说明：</span>
+                                    <span class="detail-value">{{ rule.remark|default:"无" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="rule-actions">
+                            <a href="{% url 'edit_rule' rule.id %}" class="action-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                                <span>编辑</span>
+                            </a>
+                            <button class="action-btn delete-btn" data-rule-id="{{ rule.id }}">
+                                <i class="fas fa-trash"></i>
+                                <span>删除</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="empty-text">暂无{{ category_name }}相关规则</div>
+                <a href="{% url 'add_rule' %}?type={{ rule_type }}" class="add-first-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>添加第一条规则</span>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除这条规则吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" id="cancelDelete">取消</button>
+                <form id="deleteForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="confirm-delete-btn">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // 处理删除确认逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteModal = document.getElementById('deleteModal');
+            const closeModal = document.getElementById('closeModal');
+            const cancelDelete = document.getElementById('cancelDelete');
+            const deleteForm = document.getElementById('deleteForm');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            // 打开弹窗并设置删除表单的action
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const ruleId = this.getAttribute('data-rule-id');
+                    deleteForm.action = "{% url 'delete_rule' 0 %}".replace('0', ruleId);
+                    deleteModal.style.display = 'flex';
+                });
+            });
+
+            // 关闭弹窗
+            function hideModal() {
+                deleteModal.style.display = 'none';
+            }
+
+            closeModal.addEventListener('click', hideModal);
+            cancelDelete.addEventListener('click', hideModal);
+
+            // 点击弹窗外部关闭
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    hideModal();
+                }
+            });
+        });
+    </script>
+{% endblock %}

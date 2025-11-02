@@ -8,80 +8,165 @@
 {% endblock %}
 
 {% block content %}
-            <!-- 页面标题区域 -->
-            <div class="page-header">
-                <h1 class="page-title">加分规则管理页</h1>
-                <a href="{% url 'counselor_dashboard' %}" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>返回首页</span>
-                </a>
-            </div>
+    <!-- 页面标题区域 -->
+    <div class="page-header">
+        <h1 class="page-title">加分规则管理页</h1>
+        <a href="{% url 'counselor_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </div>
 
-            <!-- 添加规则区域 -->
-            <div class="add-rule-section">
-                <h2 class="section-title">加入规则</h2>
-                <a href="" class="add-rule-btn" role="button">
-                    <i class="fas fa-plus"></i>
-                    <span>添加新规则</span>
-                </a>
-            </div>
+    <!-- 添加规则区域 -->
+    <div class="add-rule-section">
+        <h2 class="section-title">规则管理</h2>
+        <a href="{% url 'add_rule' %}" class="add-rule-btn" role="button">
+            <i class="fas fa-plus"></i>
+            <span>添加新规则</span>
+        </a>
+    </div>
 
-            <!-- 规则分类网格 -->
-            <div class="rules-grid">
-                <!-- 学生竞赛 -->
-                <div class="rule-category">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <h3 class="category-title">学生竞赛</h3>
+    <!-- 规则分类卡片容器 -->
+    <div class="rules-grid">
+        <!-- 学业竞赛规则卡片 -->
+        <a href="{% url 'rule_detail' 'student-competition' %}" class="rule-card-link">
+            <div class="rule-category-card">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-trophy"></i>
                     </div>
-                    <div class="empty-state">
-                        <i class="fas fa-clipboard-list empty-icon"></i>
-                        <div class="empty-text">暂无规则</div>
+                    <div class="category-info">
+                        <h3 class="category-title">学业竞赛</h3>
+                        <span class="rule-count">{{ student_competition_rules.count }} 条规则</span>
                     </div>
                 </div>
-
-                <!-- 科研成果 -->
-                <div class="rule-category">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-flask"></i>
+                
+                <div class="category-preview">
+                    {% if student_competition_rules %}
+                        <ul class="preview-list">
+                            {% for rule in student_competition_rules|slice:":2" %}
+                                <li>{{ rule.description|truncatechars:30 }}{% if forloop.counter == 2 and student_competition_rules.count > 2 %}...{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if student_competition_rules.count > 2 %}
+                            <div class="more-indicator">
+                                还有 {{ student_competition_rules.count|add:"-2" }} 条规则
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <div class="empty-text">暂无规则</div>
                         </div>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+
+        <!-- 科研成果规则卡片 -->
+        <a href="{% url 'rule_detail' 'research-achievement' %}" class="rule-card-link">
+            <div class="rule-category-card">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="category-info">
                         <h3 class="category-title">科研成果</h3>
-                    </div>
-                    <div class="empty-state">
-                        <i class="fas fa-clipboard-list empty-icon"></i>
-                        <div class="empty-text">暂无规则</div>
+                        <span class="rule-count">{{ research_achievement_rules.count }} 条规则</span>
                     </div>
                 </div>
-
-                <!-- 创新创业训练 -->
-                <div class="rule-category">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-lightbulb"></i>
+                
+                <div class="category-preview">
+                    {% if research_achievement_rules %}
+                        <ul class="preview-list">
+                            {% for rule in research_achievement_rules|slice:":2" %}
+                                <li>{{ rule.description|truncatechars:30 }}{% if forloop.counter == 2 and research_achievement_rules.count > 2 %}...{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if research_achievement_rules.count > 2 %}
+                            <div class="more-indicator">
+                                还有 {{ research_achievement_rules.count|add:"-2" }} 条规则
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <div class="empty-text">暂无规则</div>
                         </div>
-                        <h3 class="category-title">创新创业训练</h3>
-                    </div>
-                    <div class="empty-state">
-                        <i class="fas fa-clipboard-list empty-icon"></i>
-                        <div class="empty-text">暂无规则</div>
-                    </div>
-                </div>
-
-                <!-- 综合表现加分 -->
-                <div class="rule-category">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h3 class="category-title">综合表现加分</h3>
-                    </div>
-                    <div class="empty-state">
-                        <i class="fas fa-clipboard-list empty-icon"></i>
-                        <div class="empty-text">暂无规则</div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
+        </a>
+
+        <!-- 创新创业训练规则卡片 -->
+        <a href="{% url 'rule_detail' 'innovation-entrepreneurship' %}" class="rule-card-link">
+            <div class="rule-category-card">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-title">创新创业训练</h3>
+                        <span class="rule-count">{{ innovation_entrepreneurship_rules.count }} 条规则</span>
+                    </div>
+                </div>
+                
+                <div class="category-preview">
+                    {% if innovation_entrepreneurship_rules %}
+                        <ul class="preview-list">
+                            {% for rule in innovation_entrepreneurship_rules|slice:":2" %}
+                                <li>{{ rule.description|truncatechars:30 }}{% if forloop.counter == 2 and innovation_entrepreneurship_rules.count > 2 %}...{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if innovation_entrepreneurship_rules.count > 2 %}
+                            <div class="more-indicator">
+                                还有 {{ innovation_entrepreneurship_rules.count|add:"-2" }} 条规则
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <div class="empty-text">暂无规则</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        
+        <!-- 综合表现加分规则卡片 -->
+        <a href="{% url 'rule_detail' 'comprehensive-performance' %}" class="rule-card-link">
+            <div class="rule-category-card">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-title">综合表现加分</h3>
+                        <span class="rule-count">{{ comprehensive_performance_rules.count }} 条规则</span>
+                    </div>
+                </div>
+                
+                <div class="category-preview">
+                    {% if comprehensive_performance_rules %}
+                        <ul class="preview-list">
+                            {% for rule in comprehensive_performance_rules|slice:":2" %}
+                                <li>{{ rule.description|truncatechars:30 }}{% if forloop.counter == 2 and comprehensive_performance_rules.count > 2 %}...{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if comprehensive_performance_rules.count > 2 %}
+                            <div class="more-indicator">
+                                还有 {{ comprehensive_performance_rules.count|add:"-2" }} 条规则
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list empty-icon"></i>
+                            <div class="empty-text">暂无规则</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    </div>
+    
 {% endblock %}
