@@ -11,5 +11,6 @@ urlpatterns = [
     path('rules/', views.counselor_rules, name='counselor_rules'),
     path('approve/<int:submission_id>/', views.approve_submission, name='approve_submission'),
     path('reject/<int:submission_id>/', views.reject_submission, name='reject_submission'),
+    path('review/<int:submission_id>/', views.review_detail, name='review_detail'),
     path('set-score/<int:student_id>/', views.set_academic_score, name='set_academic_score'),
 ]

@@ -1,0 +1,192 @@
+<!-- GradPath/templates/counselors/review_detail.html 完整实现 -->
+{% extends 'counselors/base.html' %}
+{% load static %}
+{% block title %}审核详情 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'CSS/counselor/review_detail.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 页面标题区域 -->
+    <div class="page-header">
+        <h1 class="page-title">审核详情页</h1>
+        <a href="{% url 'review_submissions' %}" class="back-btn btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回列表</span>
+        </a>
+    </div>
+
+    <!-- 内容网格 -->
+    <div class="content-grid">
+        <!-- 学生信息及申请项目 -->
+        <div class="info-card student-info">
+            <h2 class="card-title">学生信息及申请项目</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">学号</span>
+                    <div class="info-value">{{ submission.student.student_id }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">姓名</span>
+                    <div class="info-value">{{ submission.student.full_name|default:submission.student.user.username }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">学院</span>
+                    <div class="info-value">{{ submission.student.college|default:"-" }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">专业</span>
+                    <div class="info-value">{{ submission.student.major|default:"-" }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">申请类型</span>
+                    <div class="info-value">{{ submission.get_category_display }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">自评分数</span>
+                    <div class="info-value">{{ submission.self_rating }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">备注</span>
+                    <div class="info-value">{{ submission.remarks|default:"-" }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">申请时间</span>
+                    <div class="info-value">{{ submission.timestamp|date:"Y-m-d H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 证明材料 -->
+        <div class="info-card">
+            <h2 class="card-title">证明材料</h2>
+            <div class="proof-materials">
+                {% if submission.file %}
+                <div class="proof-item">
+                    <i class="fas fa-file-alt proof-icon"></i>
+                    <div class="proof-text"><a href="{{ submission.file.url }}" target="_blank">下载材料: {{ submission.file.name|cut:"uploads/" }}</a></div>
+                </div>
+                {% else %}
+                <div class="proof-item">
+                    <i class="fas fa-file-circle-xmark proof-icon"></i>
+                    <div class="proof-text">未上传附件</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 智能识别结果 -->
+        <div class="info-card">
+            <h2 class="card-title">智能识别结果</h2>
+            <div class="ai-result">
+                <div class="ai-placeholder">
+                    <i class="fas fa-robot"></i>
+                    <div>AI识别结果将在这里显示</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 审核操作 -->
+        <div class="info-card review-actions">
+            <h2 class="card-title">审核操作</h2>
+            
+            <div class="radio-group">
+                <div class="radio-item">
+                    <input type="radio" id="approve" name="review-action" value="approve" checked>
+                    <label for="approve" class="radio-label">通过</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="reject" name="review-action" value="reject">
+                    <label for="reject" class="radio-label">驳回</label>
+                </div>
+            </div>
+
+            <div class="reject-reason" style="display: none;" id="reasonContainer">
+                <textarea class="reason-input" id="rejectReason" name="reject_reason" placeholder="请输入驳回理由"></textarea>
+            </div>
+
+            <div class="score-input" id="scoreContainer">
+                <span class="score-label">核定分值</span>
+                <input type="number" class="score-field" id="approvedScore" name="approved_score" min="0" step="0.5" placeholder="0.0">
+            </div>
+
+            <div class="d-flex gap-2">
+                <!-- 通过表单 -->
+                <form method="post" action="{% url 'approve_submission' submission.id %}" id="approveForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="approved_score" id="submitScore" value="">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check"></i>
+                        <span>通过</span>
+                    </button>
+                </form>
+                
+                <!-- 驳回表单 -->
+                <form method="post" action="{% url 'reject_submission' submission.id %}" id="rejectForm" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="reject_reason" id="submitReason" value="">
+                    <button type="submit" class="submit-btn reject">
+                        <i class="fas fa-times"></i>
+                        <span>驳回</span>
+                    </button>
+                </form>
+                
+                <a href="{% url 'review_submissions' %}" class="btn btn-outline-secondary">返回列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 切换审核类型显示不同表单
+    const approveRadio = document.getElementById('approve');
+    const rejectRadio = document.getElementById('reject');
+    const reasonContainer = document.getElementById('reasonContainer');
+    const scoreContainer = document.getElementById('scoreContainer');
+    const approveForm = document.getElementById('approveForm');
+    const rejectForm = document.getElementById('rejectForm');
+    const approvedScore = document.getElementById('approvedScore');
+    const rejectReason = document.getElementById('rejectReason');
+    const submitScore = document.getElementById('submitScore');
+    const submitReason = document.getElementById('submitReason');
+
+    approveRadio.addEventListener('change', function() {
+        if (this.checked) {
+            reasonContainer.style.display = 'none';
+            scoreContainer.style.display = 'block';
+            approveForm.style.display = 'block';
+            rejectForm.style.display = 'none';
+        }
+    });
+
+    rejectRadio.addEventListener('change', function() {
+        if (this.checked) {
+            reasonContainer.style.display = 'block';
+            scoreContainer.style.display = 'none';
+            approveForm.style.display = 'none';
+            rejectForm.style.display = 'block';
+        }
+    });
+
+    // 提交前处理数据
+    approveForm.addEventListener('submit', function(e) {
+        if (!approvedScore.value) {
+            e.preventDefault();
+            alert('请输入核定分值');
+            return;
+        }
+        submitScore.value = approvedScore.value;
+    });
+
+    rejectForm.addEventListener('submit', function(e) {
+        if (!rejectReason.value.trim()) {
+            e.preventDefault();
+            alert('请输入驳回理由');
+            return;
+        }
+        submitReason.value = rejectReason.value;
+    });
+</script>
+{% endblock %}

@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from students.models import StudentProfile, Submission
 from django.contrib.auth import logout
 from decimal import Decimal, InvalidOperation
+from django.utils import timezone
+from datetime import timedelta
 
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
@@ -83,11 +85,16 @@ def counselor_dashboard(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')  # 非辅导员跳转到学生登录
 
+    latest_pending_submissions = Submission.objects.filter(
+        approved=False,
+        rejected=False
+    ).select_related('student').order_by('-timestamp')[:5]
     pending_count = Submission.objects.filter(approved=False).count()
     total_students = StudentProfile.objects.count()
     return render(request, 'counselors/dashboard.html', {
         'pending_count': pending_count,
-        'total_students': total_students
+        'total_students': total_students,
+        'latest_pending_submissions': latest_pending_submissions,
     })
 
 
@@ -147,6 +154,18 @@ def reject_submission(request, submission_id):
         submission.reject_reason = request.POST.get('reject_reason')  # 获取驳回理由
         submission.save()
     return redirect('review_submissions')
+
+
+# 审核详情页
+@login_required
+def review_detail(request, submission_id):
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    submission = get_object_or_404(Submission, id=submission_id)
+    return render(request, 'counselors/review_detail.html', {
+        'submission': submission
+    })
 
 
 # 查看学生信息

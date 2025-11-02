@@ -19,20 +19,21 @@
                     <thead class="table-light">
                         <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">学生</th>
-                            <th scope="col">分类</th>
+                            <th scope="col">学号</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">申请项目</th>
                             <th scope="col">备注</th>
                             <th scope="col">自评</th>
                             <th scope="col">查看文件</th>
-                            <th scope="col">审核操作</th>
+                            <th scope="col">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for sub in submissions %}
                         <tr>
-                            <!-- 表格数据 -->
                             <td>{{ sub.id }}</td>
-                            <td>{{ sub.student.student_id }} - {{ sub.student.full_name }}</td>
+                            <td>{{ sub.student.student_id }}</td>
+                            <td>{{ sub.student.full_name }}</td>
                             <td>{{ sub.get_category_display }}</td>
                             <td>{{ sub.remarks }}</td>
                             <td>{{ sub.self_rating }}</td>
@@ -44,19 +45,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <!-- 通过审核表单 -->
-                                <form method="post" action="{% url 'approve_submission' sub.id %}">
-                                    {% csrf_token %}
-                                    <input type="number" name="approved_score" min="0" step="0.5" required>
-                                    <button type="submit" class="btn btn-success">通过</button>
-                                </form>
-                        
-                                <!-- 驳回审核表单 -->
-                                <form method="post" action="{% url 'reject_submission' sub.id %}" style="margin-top: 10px;">
-                                    {% csrf_token %}
-                                    <textarea name="reject_reason" placeholder="请输入驳回理由" required rows="2" style="width: 100%;"></textarea>
-                                    <button type="submit" class="btn btn-danger">驳回</button>
-                                </form>
+                                <a href="{% url 'review_detail' sub.id %}" class="btn btn-primary">进行审核</a>
                             </td>
                         </tr>
                         {% empty %}

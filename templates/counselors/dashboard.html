@@ -19,10 +19,10 @@
         <!-- 待审核申请总数 -->
         <div class="stat-card">
             <div class="stat-header">
-                <h3 class="stat-title">待审核申请总数</h3>
                 <div class="stat-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>
+                <h3 class="stat-title">&nbsp &nbsp 待审核申请总数</h3>
             </div>
             <div class="stat-value">{{ pending_count|default:"-" }}</div>
             <p class="stat-description">需要您审核的加分申请</p>
@@ -35,10 +35,10 @@
         <!-- 管理加分细则 -->
         <div class="stat-card">
             <div class="stat-header">
-                <h3 class="stat-title">管理加分细则</h3>
                 <div class="stat-icon">
                     <i class="fas fa-cog"></i>
                 </div>
+                <h3 class="stat-title">&nbsp &nbsp 管理加分细则</h3>
             </div>
             <div class="stat-value">{{ rules_count|default:"-" }}</div>
             <p class="stat-description">当前生效的加分规则</p>
@@ -51,10 +51,10 @@
         <!-- 本周处理数 -->
         <div class="stat-card">
             <div class="stat-header">
-                <h3 class="stat-title">本周处理数</h3>
                 <div class="stat-icon">
                     <i class="fas fa-chart-bar"></i>
                 </div>
+                <h3 class="stat-title">&nbsp &nbsp 本周处理数</h3>
             </div>
             <div class="stat-value">{{ handled_this_week|default:"-" }}</div>
             <p class="stat-description">本周已处理的申请数量</p>
@@ -69,23 +69,115 @@
     <div class="pending-section">
         <div class="section-header">
             <h2 class="section-title">最新待审核申请</h2>
-            <a href="#" class="view-all">
-                <span>查看全部</span>
-                <i class="fas fa-chevron-right"></i>
-            </a>
+            <a href="{% url 'review_submissions' %}" class="view-all">查看全部</a>
         </div>
-
+    
         <div class="pending-card">
-            <div class="empty-state">
-                <i class="fas fa-clipboard-list empty-icon"></i>
-                <h4 class="empty-title">暂无待审核申请</h4>
-                <p class="empty-description">学生提交的申请将在这里显示</p>
-            </div>
+            {% if latest_pending_submissions %}
+                <!-- 滚动容器 -->
+                <div class="pending-scroll-container" id="autoScrollContainer">
+                    <div class="pending-list" id="scrollContent">
+                        {% for sub in latest_pending_submissions %}
+                        <div class="pending-item">
+                            <div class="pending-info">
+                                <div class="pending-name">学生：{{ sub.student.full_name }}</div>
+                                <div class="pending-category">类型：{{ sub.get_category_display }}</div>
+                                <div class="pending-time">提交时间：{{ sub.timestamp|date:"Y-m-d H:i" }}</div>
+                            </div>
+                            <a href="{% url 'review_submissions' %}" class="pending-action">处理</a>
+                        </div>
+                        {% endfor %}
+    
+                        <!-- 复制一份内容，用于无缝循环衔接 -->
+                        {% for sub in latest_pending_submissions %}
+                        <div class="pending-item">
+                            <div class="pending-info">
+                                <div class="pending-name">学生：{{ sub.student.full_name }}</div>
+                                <div class="pending-category">类型：{{ sub.get_category_display }}</div>
+                                <div class="pending-time">提交时间：{{ sub.timestamp|date:"Y-m-d H:i" }}</div>
+                            </div>
+                            <a href="{% url 'review_submissions' %}" class="pending-action">处理</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">暂无待审核申请</div>
+            {% endif %}
         </div>
     </div>
+
+
+
     
         
     <br>
-    <a href="{% url 'login' %}"><span>退出登录（暂放此处）</span></a>
+    <a href="{% url 'root' %}"><span>退出登录（暂放此处）</span></a>
+    
+    <script>
+    const container = document.getElementById('autoScrollContainer');
+    const content = document.getElementById('scrollContent');
+    
+    // 滚动速度（像素/秒）
+    const scrollSpeed = 100; 
+    // 单条数据滚动间隔（毫秒）
+    const itemPause = 3000;
+    // 初始静止时间（毫秒）
+    const initialDelay = 5000; // 5秒
+    
+    // 单个item的总高度（包含间距）
+    const itemHeight = document.querySelector('.pending-item').offsetHeight + 12;
+    // 原始数据数量
+    const itemCount = document.querySelectorAll('.pending-item').length / 2;
+    
+    let scrollPosition = 0;
+    let isPausing = false;
+    let accumulatedScroll = 0;
+    let isScrolling = false; // 控制是否启动滚动
+    
+    // 滚动动画函数
+    function scrollAnimation() {
+        if (isScrolling) { // 只有启动后才执行滚动
+            if (!isPausing) {
+                const delta = scrollSpeed / 60;
+                scrollPosition -= delta;
+                accumulatedScroll += delta;
+                content.style.transform = `translateY(${scrollPosition}px)`;
+    
+                // 减速逻辑
+                if (accumulatedScroll + delta >= itemHeight) {
+                    const remaining = itemHeight - accumulatedScroll;
+                    scrollPosition -= remaining;
+                    accumulatedScroll = itemHeight;
+                }
+    
+                // 触发停顿
+                if (accumulatedScroll >= itemHeight) {
+                    isPausing = true;
+                    accumulatedScroll = 0;
+                    setTimeout(() => {
+                        isPausing = false;
+                    }, itemPause);
+                }
+    
+                // 循环重置
+                if (Math.abs(scrollPosition) >= itemHeight * itemCount) {
+                    scrollPosition = 0;
+                    content.style.transform = `translateY(0)`;
+                }
+            }
+        }
+        requestAnimationFrame(scrollAnimation);
+    }
+    
+    // 启动滚动动画（先不执行实际滚动）
+    scrollAnimation();
+    
+    // 5秒后启动滚动
+    setTimeout(() => {
+        isScrolling = true;
+    }, initialDelay);
+    </script>
+    
     
 {% endblock %}

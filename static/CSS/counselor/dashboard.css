@@ -23,7 +23,6 @@ body {
 }
 .stat-header {
     display: flex;
-    justify-content: between;
     align-items: center;
     margin-bottom: 16px;
 }
@@ -76,4 +75,63 @@ body {
     border-radius: 12px;
     box-shadow: var(--card-shadow);
     padding: 24px;
+}
+
+/* 滚动容器：固定高度（刚好显示3条）+ 隐藏滚动条 */
+.pending-scroll-container {
+    max-height: 400px; /* 确保刚好显示3条item的高度 */
+    overflow: hidden;
+    position: relative;
+    /* 隐藏所有浏览器滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Chrome/Safari隐藏滚动条 */
+.pending-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+}
+
+.pending-item {
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    display: flex;
+    min-height: 125px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pending-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pending-name {
+    font-weight: 500;
+}
+
+.pending-category, .pending-time {
+    font-size: 14px;
+    color: #666;
+}
+
+.pending-action {
+    color: #3498db;
+    text-decoration: none;
+    padding: 4px 12px;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    font-size: 14px;
 }
