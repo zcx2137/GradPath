@@ -1,0 +1,343 @@
+ /* edit_rule.css - 编辑规则页面样式 */
+
+/* 页面容器 */
+.edit-rule-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* 页面头部 */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.header-content {
+    position: relative;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: var(--white);
+    color: var(--gray-text);
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.back-btn:hover {
+    background-color: var(--light-gray);
+    color: var(--dark-text);
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    color: var(--gray-text);
+    font-size: 1rem;
+}
+
+/* 表单区域 */
+.form-section {
+    margin-bottom: 40px;
+}
+
+.form-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: var(--hover-shadow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    border-bottom: 1px solid var(--light-gray);
+    background-color: rgba(74, 108, 247, 0.03);
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.2rem;
+}
+
+/* 表单样式 */
+.rule-form {
+    padding: 30px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.form-label label {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.required {
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+.form-field {
+    position: relative;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: var(--white);
+    color: var(--dark-text);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+}
+
+.form-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-text);
+    pointer-events: none;
+}
+
+.textarea-icon {
+    top: 20px;
+    transform: none;
+}
+
+/* 分数输入组 */
+.score-input-group {
+    position: relative;
+}
+
+.score-input-group input {
+    padding-right: 60px;
+}
+
+.score-unit {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.score-input-group .form-icon {
+    right: 16px;
+}
+
+/* 表单错误 */
+.form-errors {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background-color: #ffeaea;
+    border-radius: 8px;
+    border-left: 4px solid #e74c3c;
+    margin-bottom: 24px;
+}
+
+.error-icon {
+    color: #e74c3c;
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.error-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #c0392b;
+}
+
+.error-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7a1c1c;
+}
+
+.field-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #e74c3c;
+}
+
+/* 提示文字 */
+.field-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--gray-text);
+}
+
+.field-hint i {
+    margin-top: 2px;
+}
+
+/* 表单操作按钮 */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--light-gray);
+}
+
+.cancel-btn,
+.save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn {
+    background-color: var(--white);
+    color: var(--gray-text);
+    border: 1px solid var(--light-gray);
+}
+
+.cancel-btn:hover {
+    background-color: var(--light-gray);
+    color: var(--dark-text);
+}
+
+.save-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 108, 247, 0.4);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .card-header {
+        padding: 20px;
+    }
+
+    .rule-form {
+        padding: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancel-btn,
+    .save-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .edit-rule-container {
+        padding: 0 10px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .card-icon {
+        align-self: flex-end;
+    }
+}

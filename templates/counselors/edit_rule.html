@@ -8,83 +8,153 @@
 {% endblock %}
 
 {% block content %}
-    <div class="form-container">
-        <div class="form-header">
+<div class="edit-rule-container">
+    <div class="page-header">
+        <div class="header-content">
             <a href="{% url 'rule_detail' rule.rule_type %}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
-                <span>返回详情</span>
+                <span>返回规则详情</span>
             </a>
-            <h1 class="form-title">{{ page_title }}</h1>
+            <h1 class="page-title">{{ page_title }}</h1>
+            <p class="page-subtitle">编辑或修改当前评分规则信息</p>
         </div>
-
-        <form method="post" class="rule-form">
-            {% csrf_token %}
-            
-            <!-- 表单错误提示 -->
-            {% if form.non_field_errors %}
-                <div class="form-errors">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            
-            <!-- 表单字段 -->
-            <div class="form-group">
-                {{ form.rule_type.label_tag }}
-                {{ form.rule_type }}
-                {% if form.rule_type.errors %}
-                    <div class="field-error">{{ form.rule_type.errors.0 }}</div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                {{ form.item_name.label_tag }}
-                {{ form.item_name }}
-                {% if form.item_name.errors %}
-                    <div class="field-error">{{ form.item_name.errors.0 }}</div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                {{ form.score.label_tag }}
-                <div class="score-input-group">
-                    {{ form.score }}
-                    <span class="score-unit">分</span>
-                </div>
-                {% if form.score.errors %}
-                    <div class="field-error">{{ form.score.errors.0 }}</div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                {{ form.description.label_tag }}
-                {{ form.description }}
-                {% if form.description.errors %}
-                    <div class="field-error">{{ form.description.errors.0 }}</div>
-                {% endif %}
-                <small class="field-hint">请详细描述加分条件、适用范围等信息</small>
-            </div>
-            
-            <div class="form-group">
-                {{ form.remark.label_tag }}
-                {{ form.remark }}
-                {% if form.remark.errors %}
-                    <div class="field-error">{{ form.remark.errors.0 }}</div>
-                {% endif %}
-                <small class="field-hint">可选：填写规则的特殊说明或注意事项</small>
-            </div>
-            
-            <!-- 提交按钮 -->
-            <div class="form-actions">
-                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'rule_detail' rule.rule_type %}'">
-                    取消
-                </button>
-                <button type="submit" class="save-btn">
-                    <i class="fas fa-save"></i>
-                    保存修改
-                </button>
-            </div>
-        </form>
     </div>
+
+    <div class="form-section">
+        <div class="form-card">
+            <div class="card-header">
+                <h2 class="card-title">规则信息</h2>
+                <div class="card-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+            </div>
+            
+            <form method="post" class="rule-form">
+                {% csrf_token %}
+                
+                <!-- 表单错误提示 -->
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="error-content">
+                            <h4>提交表单时遇到问题：</h4>
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label">
+                            {{ form.rule_type.label_tag }}
+                            <span class="required">*</span>
+                        </div>
+                        <div class="form-field">
+                            {{ form.rule_type }}
+                            <i class="form-icon fas fa-list"></i>
+                        </div>
+                        {% if form.rule_type.errors %}
+                            <div class="field-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.rule_type.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-label">
+                            {{ form.item_name.label_tag }}
+                            <span class="required">*</span>
+                        </div>
+                        <div class="form-field">
+                            {{ form.item_name }}
+                            <i class="form-icon fas fa-tag"></i>
+                        </div>
+                        {% if form.item_name.errors %}
+                            <div class="field-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.item_name.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-label">
+                        {{ form.score.label_tag }}
+                        <span class="required">*</span>
+                    </div>
+                    <div class="score-input-group">
+                        {{ form.score }}
+                        <span class="score-unit">分</span>
+                        <i class="form-icon fas fa-star"></i>
+                    </div>
+                    {% if form.score.errors %}
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.score.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-label">
+                        {{ form.description.label_tag }}
+                        <span class="required">*</span>
+                    </div>
+                    <div class="form-field">
+                        {{ form.description }}
+                        <i class="form-icon textarea-icon fas fa-align-left"></i>
+                    </div>
+                    {% if form.description.errors %}
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.description.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="field-hint">
+                        <i class="fas fa-info-circle"></i>
+                        请详细描述加分条件、适用范围、证明材料要求等信息
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-label">
+                        {{ form.remark.label_tag }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.remark }}
+                        <i class="form-icon textarea-icon fas fa-sticky-note"></i>
+                    </div>
+                    {% if form.remark.errors %}
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.remark.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="field-hint">
+                        <i class="fas fa-info-circle"></i>
+                        可选：填写规则的特殊说明、注意事项或审核要点
+                    </div>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'rule_detail' rule.rule_type %}'">
+                        <i class="fas fa-times"></i>
+                        取消
+                    </button>
+                    <button type="submit" class="save-btn">
+                        <i class="fas fa-save"></i>
+                        保存修改
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
