@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>系统管理员 - 保研加分小助手</title>
+    <style>
+        .nav { margin: 20px 0; }
+        .user-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .user-table th, .user-table td { border: 1px solid #ddd; padding: 8px; }
+        .btn { padding: 6px 12px; margin: 0 5px; text-decoration: none; }
+        .btn-add { background-color: #4CAF50; color: white; }
+        .btn-delete { background-color: #f44336; color: white; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <h1>系统管理员面板</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn">用户管理</a>
+        <a href="{% url 'add_user' %}" class="btn btn-add">添加用户</a>
+        <a href="{% url 'admin_logout' %}" class="btn" style="background-color: #ff9800; color: white;">退出登录</a>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>
+</html>

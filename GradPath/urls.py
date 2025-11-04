@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('student/', include('students.urls')),  # 学生相关URL
     path('counselor/', include('counselors.urls')),  # 辅导员相关URL
+    path('admins/', include('admins.urls')),  # 管理员入口
     path('', root_view, name='root'),
 ]
 

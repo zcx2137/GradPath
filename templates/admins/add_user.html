@@ -1,0 +1,73 @@
+{% extends 'admins/base.html' %}
+
+{% block content %}
+    <h2>添加新用户</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label>{{ form.user_type.label }}:</label>
+            {{ form.user_type }}
+            {% if form.user_type.errors %}
+                <span style="color: red;">{{ form.user_type.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label>{{ form.username.label }}:</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <span style="color: red;">{{ form.username.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label>{{ form.full_name.label }}:</label>
+            {{ form.full_name }}
+        </div>
+        
+        <div>
+            <label>{{ form.college.label }}:</label>
+            {{ form.college }}
+        </div>
+        
+        <div id="student-fields">
+            <label>{{ form.student_id.label }}:</label>
+            {{ form.student_id }}
+            {% if form.student_id.errors %}
+                <span style="color: red;">{{ form.student_id.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div id="counselor-fields" style="display: none;">
+            <label>{{ form.employee_id.label }}:</label>
+            {{ form.employee_id }}
+            {% if form.employee_id.errors %}
+                <span style="color: red;">{{ form.employee_id.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label>{{ form.password1.label }}:</label>
+            {{ form.password1 }}
+        </div>
+        
+        <div>
+            <label>{{ form.password2.label }}:</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <span style="color: red;">{{ form.password2.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-add">创建用户</button>
+    </form>
+
+    <script>
+        // 根据用户类型切换显示字段
+        document.getElementById('id_user_type').addEventListener('change', function() {
+            const isStudent = this.value === 'student';
+            document.getElementById('student-fields').style.display = isStudent ? 'block' : 'none';
+            document.getElementById('counselor-fields').style.display = isStudent ? 'none' : 'block';
+        });
+    </script>
+{% endblock %}
