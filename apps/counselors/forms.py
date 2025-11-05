@@ -1,5 +1,5 @@
 from django import forms
-from .models import Rule
+from students.models import Rule
 
 class RuleForm(forms.ModelForm):
     class Meta:
