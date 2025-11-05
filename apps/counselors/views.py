@@ -92,7 +92,12 @@ def counselor_dashboard(request):
         approved=False,
         rejected=False
     ).select_related('student').order_by('-timestamp')[:5]
-    pending_count = Submission.objects.filter(approved=False, rejected=False).count()
+
+    # 辅导员控制面板中的待审核数量统计
+    pending_count = Submission.objects.filter(
+        approved=False,
+        rejected=False  # 同样排除已驳回的申请
+    ).count()
 
     # 计算本周处理数
     today = timezone.now().date()
@@ -121,9 +126,13 @@ def review_submissions(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
-    submissions = Submission.objects.filter(approved=False).order_by('-timestamp')
+    pending_submissions = Submission.objects.filter(
+        approved=False,  # 未通过
+        rejected=False   # 未驳回
+    ).select_related('student').order_by('-timestamp')  # 保留预加载 student，避免模板报错
+
     return render(request, 'counselors/review_submissions.html', {
-        'submissions': submissions
+        'submissions': pending_submissions  # 传给模板的只有待审核数据
     })
 
 
@@ -189,12 +198,31 @@ def reject_submission(request, submission_id):
 # 审核详情页
 @login_required
 def review_detail(request, submission_id):
-    if not hasattr(request.user, 'counselor_profile'):
-        return redirect('login')
+    # 关键：用 select_related('student') 预加载学生关联数据
+    # 同时只允许查看未处理（未通过且未驳回）的申请
+    submission = get_object_or_404(
+        Submission.objects.select_related('student'),  # 必须保留这一行，否则模板无法访问 student
+        id=submission_id,
+        approved=False,
+        rejected=False  # 确保辅导员只能操作未处理的申请
+    )
 
-    submission = get_object_or_404(Submission, id=submission_id)
+    # 处理驳回逻辑
+    if request.method == 'POST':
+        if 'reject' in request.POST:
+            submission.rejected = True  # 标记为驳回
+            submission.save()
+            messages.success(request, "申请已成功驳回")
+            return redirect('review_submissions')  # 驳回后跳回列表页
+        elif 'approve' in request.POST:
+            submission.approved = True  # 处理通过逻辑（如果需要）
+            submission.save()
+            messages.success(request, "申请已成功通过")
+            return redirect('review_submissions')
+
+    #  GET 请求时返回详情页
     return render(request, 'counselors/review_detail.html', {
-        'submission': submission
+        'submission': submission  # 此时 submission 已包含 student 关联数据
     })
 
 
