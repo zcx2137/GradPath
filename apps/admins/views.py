@@ -52,11 +52,42 @@ class UserEditForm(forms.Form):
     full_name = forms.CharField(max_length=100)
     college = forms.CharField(max_length=100)
 
-    # 学生特有字段
-    student_id = forms.CharField(max_length=20, required=False)
+    # 学生特有字段（学号即用户名）
+    student_id = forms.CharField(max_length=20, required=False, label="学号（用户名）")
 
-    # 辅导员特有字段
-    employee_id = forms.CharField(max_length=20, required=False)
+    # 辅导员特有字段（工号即用户名）
+    employee_id = forms.CharField(max_length=20, required=False, label="工号（用户名）")
+
+    def __init__(self, *args, **kwargs):
+        # 接收当前用户ID，用于校验时排除自身
+        self.user_id = kwargs.pop('user_id', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_student_id(self):
+        # 校验学生学号（用户名）的唯一性
+        student_id = self.cleaned_data.get('student_id')
+        if not student_id:
+            return student_id
+
+        # 检查是否有其他用户的username或学生的student_id占用该值
+        if User.objects.exclude(id=self.user_id).filter(username=student_id).exists():
+            raise forms.ValidationError("该学号已被用作登录用户名，请更换")
+        if StudentProfile.objects.exclude(user_id=self.user_id).filter(student_id=student_id).exists():
+            raise forms.ValidationError("该学号已被其他学生使用，请更换")
+        return student_id
+
+    def clean_employee_id(self):
+        # 校验辅导员工号（用户名）的唯一性
+        employee_id = self.cleaned_data.get('employee_id')
+        if not employee_id:
+            return employee_id
+
+        # 检查是否有其他用户的username或辅导员的employee_id占用该值
+        if User.objects.exclude(id=self.user_id).filter(username=employee_id).exists():
+            raise forms.ValidationError("该工号已被用作登录用户名，请更换")
+        if CounselorProfile.objects.exclude(user_id=self.user_id).filter(employee_id=employee_id).exists():
+            raise forms.ValidationError("该工号已被其他辅导员使用，请更换")
+        return employee_id
 
 
 # 重置密码表单
@@ -171,71 +202,64 @@ def delete_user(request, user_id):
 def edit_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
-    # 判断用户类型
-    is_student = hasattr(user, 'profile')
-    is_counselor = hasattr(user, 'counselor_profile')
+    is_student = hasattr(user, 'profile')  # 假设学生关联表为profile
+    is_counselor = hasattr(user, 'counselor_profile')  # 假设辅导员关联表为counselor_profile
 
     if not is_student and not is_counselor:
         messages.error(request, '无效的用户类型')
         return redirect('admin_dashboard')
 
-    # 初始化表单数据
+    # 初始化表单数据（包含当前用户ID用于校验）
     initial_data = {}
     if is_student:
         initial_data = {
             'full_name': user.profile.full_name,
-            'student_id': user.profile.student_id,
+            'student_id': user.profile.student_id,  # 学号初始值=当前用户名
             'college': user.profile.college
         }
     elif is_counselor:
         initial_data = {
             'full_name': user.counselor_profile.full_name,
-            'employee_id': user.counselor_profile.employee_id,
+            'employee_id': user.counselor_profile.employee_id,  # 工号初始值=当前用户名
             'college': user.counselor_profile.college
         }
 
     if request.method == 'POST':
-        form = UserEditForm(request.POST)
+        form = UserEditForm(request.POST, user_id=user.id)  # 传入当前用户ID
         if form.is_valid():
             data = form.cleaned_data
 
-            # 更新用户信息
             if is_student:
-                if not data.get('student_id'):
-                    form.add_error('student_id', '学生必须填写学号')
-                    return render(request, 'admins/edit_user.html', {
-                        'form': form,
-                        'user': user,
-                        'is_student': is_student
-                    })
-
+                # 学生：同步学号和用户名
+                new_student_id = data['student_id']
+                user.username = new_student_id  # 用户名=新学号
+                user.save()
                 user.profile.full_name = data['full_name']
-                user.profile.student_id = data['student_id']
+                user.profile.student_id = new_student_id
                 user.profile.college = data['college']
                 user.profile.save()
-            elif is_counselor:
-                if not data.get('employee_id'):
-                    form.add_error('employee_id', '辅导员必须填写工号')
-                    return render(request, 'admins/edit_user.html', {
-                        'form': form,
-                        'user': user,
-                        'is_student': is_student
-                    })
+                messages.success(request, '学生信息已更新，登录用户名同步修改为新学号')
 
+            elif is_counselor:
+                # 辅导员：同步工号和用户名
+                new_employee_id = data['employee_id']
+                user.username = new_employee_id  # 用户名=新工号
+                user.save()
                 user.counselor_profile.full_name = data['full_name']
-                user.counselor_profile.employee_id = data['employee_id']
+                user.counselor_profile.employee_id = new_employee_id
                 user.counselor_profile.college = data['college']
                 user.counselor_profile.save()
+                messages.success(request, '辅导员信息已更新，登录用户名同步修改为新工号')
 
-            messages.success(request, '用户信息已更新')
             return redirect('admin_dashboard')
     else:
-        form = UserEditForm(initial=initial_data)
+        form = UserEditForm(initial=initial_data, user_id=user.id)  # 传入当前用户ID
 
     return render(request, 'admins/edit_user.html', {
         'form': form,
         'user': user,
-        'is_student': is_student
+        'is_student': is_student,
+        'is_counselor': is_counselor  # 新增辅导员标识，用于模板提示
     })
 
 

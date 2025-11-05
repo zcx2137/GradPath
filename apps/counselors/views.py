@@ -87,16 +87,31 @@ def counselor_dashboard(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')  # 非辅导员跳转到学生登录
 
+    # 获取待审核申请
     latest_pending_submissions = Submission.objects.filter(
         approved=False,
         rejected=False
     ).select_related('student').order_by('-timestamp')[:5]
-    pending_count = Submission.objects.filter(approved=False).count()
+    pending_count = Submission.objects.filter(approved=False, rejected=False).count()
+
+    # 计算本周处理数
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday())
+    handled_this_week = Submission.objects.filter(
+        approved=True,
+        timestamp__date__gte=start_of_week
+    ).count()
+
+    # 计算当前生效的加分规则总数
+    rules_count = Rule.objects.count()
+
     total_students = StudentProfile.objects.count()
     return render(request, 'counselors/dashboard.html', {
         'pending_count': pending_count,
         'total_students': total_students,
         'latest_pending_submissions': latest_pending_submissions,
+        'rules_count': rules_count,  # 传递规则数量到模板
+        'handled_this_week': handled_this_week  # 传递周处理数到模板
     })
 
 

@@ -1,7 +1,18 @@
 {% extends 'admins/base.html' %}
 
 {% block content %}
-    <h2>编辑{% if is_student %}学生{% else %}辅导员员{% endif %}信息</h2>
+    <h2>编辑{% if is_student %}学生{% else %}辅导员{% endif %}信息</h2>
+    
+    {% if is_student %}
+        <div class="alert alert-info">
+            注意：学生学号即为登录用户名，修改学号后将使用新学号登录
+        </div>
+    {% elif is_counselor %}
+        <div class="alert alert-info">
+            注意：辅导员工号即为登录用户名，修改工号后将使用新工号登录
+        </div>
+    {% endif %}
+    
     <form method="post">
         {% csrf_token %}
         
