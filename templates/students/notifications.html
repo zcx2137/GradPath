@@ -10,13 +10,12 @@
 {% block content %}
 <div class="notifications-container">
     <div class="page-header">
-        <h1 class="page-title">所有通知</h1>
+        <h1 class="page-title">所有通知（共{{ notifications|length }}条通知）</h1>
         <a href="{% url 'index' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i>
             <span>返回首页</span>
         </a>
     </div>
-
     <div class="notifications-list">
         {% for notification in notifications %}
         <div class="notification-item {% if not notification.is_read %}unread{% endif %}">

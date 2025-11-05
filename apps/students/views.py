@@ -121,7 +121,14 @@ def logout_view(request):
 # 主页
 @login_required
 def index(request):
-    return render(request, 'students/home.html')
+    # 获取当前学生的最新5条通知
+    notifications = Notification.objects.filter(
+        recipient=request.user,
+    ).order_by('-created_at')[:5]
+
+    return render(request, 'students/home.html', {
+        'notifications': notifications,
+    })
 
 
 # 获取用户资料信息
@@ -256,18 +263,6 @@ def rule_detail(request, rule_type):
         'rules': rules,
         'category_name': type_mapping.get(rule_type, '加分规则'),
         'rule_type': rule_type
-    })
-
-
-@login_required
-def student_home(request):
-    # 获取当前学生的最新5条通知
-    notifications = Notification.objects.filter(
-        recipient=request.user,
-    ).order_by('-created_at')[:5]
-
-    return render(request, 'students/home.html', {
-        'notifications': notifications,
     })
 
 

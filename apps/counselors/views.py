@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import CounselorProfile
 from django import forms
 from django.contrib.auth.decorators import login_required
-from students.models import StudentProfile, Submission, Rule
+from students.models import StudentProfile, Submission, Rule, Notification
 from django.contrib.auth import logout
 from decimal import Decimal, InvalidOperation
 from django.utils import timezone
@@ -139,37 +139,50 @@ def approve_submission(request, submission_id):
         submission.approved_score = request.POST.get('approved_score')
         submission.save()
 
-        # 根据材料类型更新对应成绩
+        # 根据材料类型更新对应成绩（原有逻辑）
         student = submission.student
         score = Decimal(submission.approved_score or 0)
-
-        # 学术类材料计入学术专长成绩
         academic_categories = ['thesis', 'competition', 'research', 'other_academic']
-        # 综合类材料计入综合表现成绩
         comprehensive_categories = ['volunteer', 'leadership', 'social_practice', 'other_comprehensive']
 
         if submission.category in academic_categories:
             student.academic_expertise_score += score
         elif submission.category in comprehensive_categories:
             student.comprehensive_performance_score += score
+        student.save()
 
-        student.save()  # 自动更新总成绩
+        # 创建"审核通过"通知
+        Notification.objects.create(
+            recipient=student.user,  # 接收通知的学生用户
+            title="材料审核通过",
+            content=f"您提交的「{submission.get_category_display()}」材料已审核通过，核定加分：{submission.approved_score}分",
+            type='submission'  # 提交审核类型通知
+        )
+
     return redirect('review_submissions')
 
 
 # 审核不通过，驳回材料
 @login_required
 def reject_submission(request, submission_id):
-    # 验证是否为辅导员
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
     submission = get_object_or_404(Submission, id=submission_id)
     if request.method == 'POST':
-        submission.approved = False  # 确保未通过
-        submission.rejected = True   # 标记为已驳回
-        submission.reject_reason = request.POST.get('reject_reason')  # 获取驳回理由
+        submission.approved = False
+        submission.rejected = True
+        submission.reject_reason = request.POST.get('reject_reason')
         submission.save()
+
+        # 创建"审核驳回"通知
+        Notification.objects.create(
+            recipient=submission.student.user,  # 接收通知的学生用户
+            title="材料审核未通过",
+            content=f"您提交的「{submission.get_category_display()}」材料未通过审核，原因：{submission.reject_reason}",
+            type='submission'  # 提交审核类型通知
+        )
+
     return redirect('review_submissions')
 
 
@@ -241,30 +254,38 @@ def counselor_rules(request):
 
 @login_required
 def add_rule(request):
-    # 验证辅导员身份
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
     if request.method == 'POST':
-        # 获取表单数据
         rule_type = request.POST.get('rule_type')
         rule_desc = request.POST.get('rule_desc')
+        rule_item = request.POST.get('item_name')
 
-        # 验证数据
         if not rule_type or not rule_desc:
             messages.error(request, "请填写所有必填字段")
             return render(request, 'counselors/add_newrules.html')
 
         # 保存新规则
-        Rule.objects.create(
+        new_rule = Rule.objects.create(
             rule_type=rule_type,
-            description=rule_desc
+            description=rule_desc,
+            item_name=rule_item
         )
 
-        messages.success(request, "加分规则添加成功")
-        return redirect('counselor_rules')  # 重定向回规则管理页
+        # 创建规则上线通知（发送给所有学生）
+        students = User.objects.filter(profile__isnull=False)  # 获取所有有学生档案的用户
+        for student in students:
+            Notification.objects.create(
+                recipient=student,
+                title="新规则上线",
+                content=f"新增「{new_rule.get_rule_type_display()}」类规则：{new_rule.item_name}。详情请查看规则说明。",
+                type='rule'  # 规则变动类型通知
+            )
 
-    # GET请求展示表单
+        messages.success(request, "加分规则添加成功")
+        return redirect('counselor_rules')
+
     return render(request, 'counselors/add_newrules.html')
 
 

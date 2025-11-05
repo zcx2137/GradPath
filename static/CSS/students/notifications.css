@@ -1,0 +1,143 @@
+/* 通知区域容器 - 完全实体化，与页面背景强区分 */
+.notification-section {
+  margin: 1.5rem 0;
+  padding: 1.2rem;
+  border-radius: 10px;
+  background-color: #ffffff; /* 纯实体白，无透明 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 加深阴影，强化区域感 */
+  border: 1px solid #e5e7eb; /* 实体边框，不用变量避免透明 */
+}
+
+/* 通知标题栏 - 强化分隔线 */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid #f0f0f0; /* 实体分隔线，更明显 */
+}
+
+.notification-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1f2937; /* 实体深色，提升对比 */
+  padding-left: 0.2rem;
+}
+
+/* 通知滚动容器 - 与外层形成明显层次 */
+.notification-scroll {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 0.8rem;
+  background-color: #f9fafb; /* 实体浅灰，完全不透明 */
+  border-radius: 8px;
+  border: 1px solid #f0f0f0; /* 增加边框，强化容器感 */
+}
+
+/* 单个通知项 - 完全实体化，拒绝透明 */
+.notification-item {
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+  border-radius: 8px;
+  background-color: #ffffff; /* 纯实体白 */
+  border: 1px solid #e5e7eb; /* 实体边框，清晰勾勒轮廓 */
+  transition: all 0.25s ease;
+}
+
+/* 未读通知 - 用强对比色突出 */
+.notification-item.unread {
+  border-left: 4px solid #3b82f6; /* 实体主题色，不用变量避免透明 */
+  background-color: #f0f9ff; /* 实体浅蓝背景，完全不透明 */
+  border-color: #bfdbfe; /* 未读状态专用边框色 */
+}
+
+/* 悬停效果 - 进一步强化区分 */
+.notification-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  border-color: #d1d5db;
+}
+
+/* 通知标题区 - 图标强化 */
+.notification-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.3rem;
+}
+
+.notification-icon {
+  width: 26px;
+  height: 26px; /* 更大图标，增强存在感 */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 类型图标 - 实体色块背景 */
+.notification-item.submission .notification-icon {
+  color: #10b981;
+  background-color: #dcfce7; /* 实体浅绿背景，无透明 */
+  border-radius: 50%;
+}
+
+.notification-item.rule .notification-icon {
+  color: #f59e0b;
+  background-color: #fef3c7; /* 实体浅黄背景，无透明 */
+  border-radius: 50%;
+}
+
+.notification-item.system .notification-icon {
+  color: #3b82f6;
+  background-color: #dbeafe; /* 实体浅蓝背景，无透明 */
+  border-radius: 50%;
+}
+
+/* 内容区 - 实体文字色 */
+.notification-content {
+  font-size: 0.9rem;
+  color: #4b5563; /* 实体次要文字色，提升对比 */
+  line-height: 1.5;
+  margin-left: 33px; /* 与图标对齐 */
+  padding: 0.3rem 0;
+}
+
+/* 时间与徽章 - 强化分隔 */
+.notification-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6b7280; /* 实体 tertiary 色 */
+  margin-left: 33px;
+  margin-top: 0.4rem;
+  padding-top: 0.3rem;
+  border-top: 1px dashed #e5e7eb; /* 实体虚线 */
+}
+
+.new-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background-color: #3b82f6; /* 实体主题色 */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* 无通知状态 - 实体化背景 */
+.empty-notifications {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: #6b7280;
+  background-color: #f9fafb; /* 实体浅灰 */
+  border-radius: 8px;
+  border: 1px dashed #e5e7eb;
+}
+
+.empty-notifications .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #9ca3af; /* 实体图标色 */
+}
