@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import StudentProfile, Submission, Rule
+from .models import StudentProfile, Submission, Rule, Notification
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.forms import ModelForm
@@ -118,12 +118,13 @@ def logout_view(request):
     return redirect('login')
 
 
+# 主页
 @login_required
 def index(request):
-    # 应用主页视图
     return render(request, 'students/home.html')
 
 
+# 获取用户资料信息
 @login_required
 def profile(request):
     # 获取当前登录用户的 Profile，如不存在则报404
@@ -146,9 +147,9 @@ def profile(request):
     return render(request, 'students/profile.html', {'form': form})
 
 
+# 学生成绩排名
 @login_required
 def ranking(request):
-    """学生成绩排名页面视图"""
     try:
         # 获取当前登录学生的档案
         profile = request.user.profile
@@ -179,6 +180,7 @@ def ranking(request):
     return render(request, 'students/ranking.html', context)
 
 
+# 上传加分材料
 @login_required
 def upload(request):
     """处理文件上传请求。
@@ -203,6 +205,7 @@ def upload(request):
     return render(request, 'students/upload.html', {'form': form})
 
 
+# 查看所有提交
 @login_required
 def submissions(request):
     profile = request.user.profile
@@ -211,6 +214,7 @@ def submissions(request):
     return render(request, 'students/submissions.html', {'submissions': subs})
 
 
+# 撤销加分材料
 def delete_submission(request, submission_id):
     # 获取要删除的提交记录，确保属于当前用户
     submission = get_object_or_404(Submission, id=submission_id)
@@ -230,10 +234,12 @@ def delete_submission(request, submission_id):
     return render(request, 'students/confirm_delete.html', {'submission': submission})
 
 
+# 进入规则页
 def rules(request):
     return render(request, 'students/rules.html')
 
 
+# 查看规则详情
 def rule_detail(request, rule_type):
     # 获取规则类型对应的中文名称
     type_mapping = {
@@ -253,6 +259,37 @@ def rule_detail(request, rule_type):
     })
 
 
+@login_required
+def student_home(request):
+    # 获取当前学生的最新5条通知
+    notifications = Notification.objects.filter(
+        recipient=request.user,
+    ).order_by('-created_at')[:5]
+
+    return render(request, 'students/home.html', {
+        'notifications': notifications,
+    })
+
+
+# 通知列表视图
+@login_required
+def notifications(request):
+    # 标记所有未读通知为已读
+    Notification.objects.filter(
+        recipient=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    # 获取所有通知
+    all_notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by('-created_at')
+
+    return render(request, 'students/notifications.html', {
+        'notifications': all_notifications
+    })
+
+
+# 根路径视图，显示登录选择页面
 def root_view(request):
-    # 根路径视图，显示登录选择页面
     return render(request, 'index.html')

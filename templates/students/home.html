@@ -64,19 +64,79 @@
             <div class="dynamic-section">
                 <div class="section-header">
                     <h2 class="section-title">动态信息列表区</h2>
-                    <a href="#" class="view-all">
+                    <a href="{% url 'notifications' %}" class="view-all">
                         <span>查看全部</span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-
-                <div class="dynamic-card">
-                    <div class="empty-state">
-                        <i class="fas fa-bell empty-icon"></i>
-                        <h4 class="empty-title">暂无动态信息</h4>
-                        <p class="empty-description">系统通知和动态将在这里显示</p>
+            
+                {% if notifications %}
+                    <!-- 滚动容器 -->
+                    <div class="pending-scroll-container" id="notificationScrollContainer">
+                        <div class="pending-list" id="notificationScrollContent">
+                            {% for notification in notifications %}
+                            <div class="pending-item">
+                                <div class="pending-info">
+                                    <div class="pending-title">
+                                        {% if notification.type == 'submission' %}
+                                            <i class="fas fa-file-alt"></i>
+                                            {{ notification.title }}
+                                        {% elif notification.type == 'rule' %}
+                                            <i class="fas fa-cog"></i>
+                                            {{ notification.title }}
+                                        {% else %}
+                                            <i class="fas fa-bullhorn"></i>
+                                            {{ notification.title }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="pending-content">{{ notification.content }}</div>
+                                    <div class="pending-time">
+                                        {{ notification.created_at|date:"Y-m-d H:i" }}
+                                        {% if not notification.is_read %}
+                                            <span class="new-badge">新</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+            
+                            <!-- 复制一份用于无缝滚动 -->
+                            {% for notification in notifications %}
+                            <div class="pending-item">
+                                <div class="pending-info">
+                                    <div class="pending-title">
+                                        {% if notification.type == 'submission' %}
+                                            <i class="fas fa-file-alt"></i>
+                                            {{ notification.title }}
+                                        {% elif notification.type == 'rule' %}
+                                            <i class="fas fa-cog"></i>
+                                            {{ notification.title }}
+                                        {% else %}
+                                            <i class="fas fa-bullhorn"></i>
+                                            {{ notification.title }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="pending-content">{{ notification.content }}</div>
+                                    <div class="pending-time">
+                                        {{ notification.created_at|date:"Y-m-d H:i" }}
+                                        {% if not notification.is_read %}
+                                            <span class="new-badge">新</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <div class="dynamic-card">
+                        <div class="empty-state">
+                            <i class="fas fa-bell empty-icon"></i>
+                            <h4 class="empty-title">暂无动态信息</h4>
+                            <p class="empty-description">系统通知和动态将在这里显示</p>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

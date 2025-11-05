@@ -25,5 +25,6 @@ urlpatterns = [
     # 加分细则
     path('rules/', views.rules, name='rules'),
     path('rules/<str:rule_type>/', views.rule_detail, name='student_rule_detail'),
-
+    # 通知界面
+    path('notifications/', views.notifications, name='notifications'),
 ]

@@ -1,0 +1,54 @@
+{% extends 'students/base.html' %}
+{% load static %}
+
+{% block title %}所有通知 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/students/notifications.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <div class="page-header">
+        <h1 class="page-title">所有通知</h1>
+        <a href="{% url 'index' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </div>
+
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+            <div class="notification-header">
+                <div class="notification-type">
+                    {% if notification.type == 'submission' %}
+                        <i class="fas fa-file-alt"></i>
+                        <span>提交审核通知</span>
+                    {% elif notification.type == 'rule' %}
+                        <i class="fas fa-cog"></i>
+                        <span>规则变动通知</span>
+                    {% else %}
+                        <i class="fas fa-bullhorn"></i>
+                        <span>系统通知</span>
+                    {% endif %}
+                </div>
+                <div class="notification-time">
+                    {{ notification.created_at|date:"Y-m-d H:i" }}
+                </div>
+            </div>
+            <div class="notification-content">
+                <h3 class="notification-title">{{ notification.title }}</h3>
+                <p class="notification-text">{{ notification.content }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-bell"></i>
+            <h4>暂无通知</h4>
+            <p>您暂时没有收到任何通知</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

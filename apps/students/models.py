@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from decimal import Decimal
+from django.utils import timezone
 
 
 # 学生档案
@@ -144,6 +145,7 @@ class Submission(models.Model):
         return f"提交#{self.id} - {student_name} - {self.get_category_display()}"
 
 
+# 加分规则
 class Rule(models.Model):
     RULE_TYPE_CHOICES = [
         ('student-competition', '学业竞赛'),
@@ -167,3 +169,25 @@ class Rule(models.Model):
     def __str__(self):
         return f"{self.get_rule_type_display()}: {self.item_name}"
 
+
+# 通知模型
+class Notification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('submission', '提交审核通知'),
+        ('rule', '规则变动通知'),
+        ('system', '系统通知'),
+    )
+
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-created_at']
