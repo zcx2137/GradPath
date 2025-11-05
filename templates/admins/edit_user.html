@@ -1,0 +1,45 @@
+{% extends 'admins/base.html' %}
+
+{% block content %}
+    <h2>编辑{% if is_student %}学生{% else %}辅导员员{% endif %}信息</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div>
+            <label>{{ form.full_name.label }}:</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}
+                <span style="color: red;">{{ form.full_name.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label>{{ form.college.label }}:</label>
+            {{ form.college }}
+            {% if form.college.errors %}
+                <span style="color: red;">{{ form.college.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        {% if is_student %}
+        <div>
+            <label>{{ form.student_id.label }}:</label>
+            {{ form.student_id }}
+            {% if form.student_id.errors %}
+                <span style="color: red;">{{ form.student_id.errors.0 }}</span>
+            {% endif %}
+        </div>
+        {% else %}
+        <div>
+            <label>{{ form.employee_id.label }}:</label>
+            {{ form.employee_id }}
+            {% if form.employee_id.errors %}
+                <span style="color: red;">{{ form.employee_id.errors.0 }}</span>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <button type="submit" class="btn btn-save">保存</button>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-cancel">取消</a>
+    </form>
+{% endblock %}

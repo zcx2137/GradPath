@@ -1,5 +1,11 @@
 {% extends 'admins/base.html' %}
 
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/admins/dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
     <h2>学生账号列表</h2>
     <table class="user-table">
@@ -19,6 +25,9 @@
             <td>{{ student.user.username }}</td>
             <td>{{ student.college }}</td>
             <td>
+                <a href="{% url 'edit_user' student.user.id %}" class="btn btn-edit">编辑</a>
+                <a href="{% url 'reset_password' student.user.id %}" class="btn btn-reset" 
+                   onclick="return confirm('确定要重置密码密码吗？')">重置密码</a>
                 <a href="{% url 'delete_user' student.user.id %}" class="btn btn-delete" 
                    onclick="return confirm('确定要删除吗？')">删除</a>
             </td>
@@ -46,6 +55,9 @@
             <td>{{ counselor.user.username }}</td>
             <td>{{ counselor.college }}</td>
             <td>
+                <a href="{% url 'edit_user' counselor.user.id %}" class="btn btn-edit">编辑</a>
+                <a href="{% url 'reset_password' counselor.user.id %}" class="btn btn-reset" 
+                   onclick="return confirm('确定要重置密码吗？')">重置密码</a>
                 <a href="{% url 'delete_user' counselor.user.id %}" class="btn btn-delete"
                    onclick="return confirm('确定要删除吗？')">删除</a>
             </td>

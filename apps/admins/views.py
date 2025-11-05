@@ -47,6 +47,29 @@ class UserCreationForm(forms.Form):
             self.add_error('employee_id', '辅导员必须填写工号')
 
 
+# 编辑用户表单
+class UserEditForm(forms.Form):
+    full_name = forms.CharField(max_length=100)
+    college = forms.CharField(max_length=100)
+
+    # 学生特有字段
+    student_id = forms.CharField(max_length=20, required=False)
+
+    # 辅导员特有字段
+    employee_id = forms.CharField(max_length=20, required=False)
+
+
+# 重置密码表单
+class PasswordResetForm(forms.Form):
+    password1 = forms.CharField(widget=forms.PasswordInput, label='新密码')
+    password2 = forms.CharField(widget=forms.PasswordInput, label='确认新密码')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('password1') != cleaned_data.get('password2'):
+            self.add_error('password2', '两次密码不一致')
+
+
 # 管理员 dashboard
 @user_passes_test(is_superadmin, login_url='admin_login')
 def admin_dashboard(request):
@@ -141,3 +164,97 @@ def delete_user(request, user_id):
     user.delete()
     messages.success(request, '用户已删除')
     return redirect('admin_dashboard')
+
+
+# 编辑用户
+@user_passes_test(is_superadmin, login_url='admin_login')
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    # 判断用户类型
+    is_student = hasattr(user, 'profile')
+    is_counselor = hasattr(user, 'counselor_profile')
+
+    if not is_student and not is_counselor:
+        messages.error(request, '无效的用户类型')
+        return redirect('admin_dashboard')
+
+    # 初始化表单数据
+    initial_data = {}
+    if is_student:
+        initial_data = {
+            'full_name': user.profile.full_name,
+            'student_id': user.profile.student_id,
+            'college': user.profile.college
+        }
+    elif is_counselor:
+        initial_data = {
+            'full_name': user.counselor_profile.full_name,
+            'employee_id': user.counselor_profile.employee_id,
+            'college': user.counselor_profile.college
+        }
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+
+            # 更新用户信息
+            if is_student:
+                if not data.get('student_id'):
+                    form.add_error('student_id', '学生必须填写学号')
+                    return render(request, 'admins/edit_user.html', {
+                        'form': form,
+                        'user': user,
+                        'is_student': is_student
+                    })
+
+                user.profile.full_name = data['full_name']
+                user.profile.student_id = data['student_id']
+                user.profile.college = data['college']
+                user.profile.save()
+            elif is_counselor:
+                if not data.get('employee_id'):
+                    form.add_error('employee_id', '辅导员必须填写工号')
+                    return render(request, 'admins/edit_user.html', {
+                        'form': form,
+                        'user': user,
+                        'is_student': is_student
+                    })
+
+                user.counselor_profile.full_name = data['full_name']
+                user.counselor_profile.employee_id = data['employee_id']
+                user.counselor_profile.college = data['college']
+                user.counselor_profile.save()
+
+            messages.success(request, '用户信息已更新')
+            return redirect('admin_dashboard')
+    else:
+        form = UserEditForm(initial=initial_data)
+
+    return render(request, 'admins/edit_user.html', {
+        'form': form,
+        'user': user,
+        'is_student': is_student
+    })
+
+
+# 重置用户密码
+@user_passes_test(is_superadmin, login_url='admin_login')
+def reset_password(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+            messages.success(request, '密码已重置')
+            return redirect('admin_dashboard')
+    else:
+        form = PasswordResetForm()
+
+    return render(request, 'admins/reset_password.html', {
+        'form': form,
+        'user': user
+    })

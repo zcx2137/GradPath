@@ -1,0 +1,6 @@
+.nav { margin: 20px 0; }
+.user-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+.user-table th, .user-table td { border: 1px solid #ddd; padding: 8px; }
+.btn { padding: 6px 12px; margin: 0 5px; text-decoration: none; }
+.btn-add { background-color: #4CAF50; color: white; }
+.btn-delete { background-color: #f44336; color: white; }
