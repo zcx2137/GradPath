@@ -1,0 +1,77 @@
+{% extends 'students/base.html' %}
+{% load static %}
+
+{% block title %}{{ category_name }} - 规则详情 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    {#  这边借用一下counselor/rule_detail.css这个css文件  #}
+    <link href="{% static 'CSS/counselor/rule_detail.css' %}" rel="stylesheet">
+    <style>
+        .rule-actions {
+            display: none; /* 隐藏编辑和删除按钮 */
+        }
+        .add-rule-btn {
+            display: none; /* 隐藏添加规则按钮 */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- 页面导航与标题 -->
+    <div class="page-header">
+        <a href="{% url 'rules' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回规则列表</span>
+        </a>
+        <h1 class="page-title">{{ category_name }} 规则详情</h1>
+    </div>
+
+    <!-- 规则列表区域 -->
+    <div class="rules-container">
+        {% if rules %}
+            <div class="rules-list">
+                {% for rule in rules %}
+                    <div class="rule-item">
+                        <div class="rule-content">
+                            <div class="rule-header">
+                                <h3 class="rule-title">规则 #{{ rule.id }}</h3>
+                                <div class="rule-meta">
+                                    <span class="create-time">创建时间：{{ rule.created_at|date:"Y-m-d H:i" }}</span>
+                                    {% if rule.updated_at != rule.created_at %}
+                                        <span class="update-time">更新时间：{{ rule.updated_at|date:"Y-m-d H:i" }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="rule-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">加分项目：</span>
+                                    <span class="detail-value">{{ rule.item_name }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">加分标准：</span>
+                                    <span class="detail-value">{{ rule.description }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">加分分值：</span>
+                                    <span class="detail-value">{{ rule.score }} 分</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">备注说明：</span>
+                                    <span class="detail-value">{{ rule.remark|default:"无" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="empty-text">暂无{{ category_name }}相关规则</div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

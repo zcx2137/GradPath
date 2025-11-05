@@ -18,53 +18,66 @@
         </div>
         
         <div class="rule-cards-container">
-            <div class="rule-card">
-                <div class="rule-card-header">
-                    <div class="rule-card-icon">
-                        <i class="fas fa-flask"></i>
+            <!-- 学业竞赛 -->
+            <a href="{% url 'student_rule_detail' 'student-competition' %}" class="rule-card-link">
+                <div class="rule-card">
+                    <div class="rule-card-header">
+                        <div class="rule-card-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3 class="rule-card-title">学业竞赛</h3>
                     </div>
-                    <h3 class="rule-card-title">科研成果</h3>
+                    <div class="rule-card-content">
+                        查看学业竞赛相关的加分规则和标准
+                    </div>
                 </div>
-                <div class="rule-card-content">
-                    查看科研成果相关的加分规则和标准
+            </a>
+
+            <!-- 科研成果 -->
+            <a href="{% url 'student_rule_detail' 'research-achievement' %}" class="rule-card-link">
+                <div class="rule-card">
+                    <div class="rule-card-header">
+                        <div class="rule-card-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="rule-card-title">科研成果</h3>
+                    </div>
+                    <div class="rule-card-content">
+                        查看科研成果相关的加分规则和标准
+                    </div>
                 </div>
-            </div>
+            </a>
             
-            <div class="rule-card">
-                <div class="rule-card-header">
-                    <div class="rule-card-icon">
-                        <i class="fas fa-trophy"></i>
+            <!-- 创新创业训练 -->
+            <a href="{% url 'student_rule_detail' 'innovation-entrepreneurship' %}" class="rule-card-link">
+                <div class="rule-card">
+                    <div class="rule-card-header">
+                        <div class="rule-card-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="rule-card-title">创新创业训练</h3>
                     </div>
-                    <h3 class="rule-card-title">学业竞赛</h3>
+                    <div class="rule-card-content">
+                        查看创新创业训练相关的加分规则和标准
+                    </div>
                 </div>
-                <div class="rule-card-content">
-                    查看学业竞赛相关的加分规则和标准
-                </div>
-            </div>
+            </a>
             
-            <div class="rule-card">
-                <div class="rule-card-header">
-                    <div class="rule-card-icon">
-                        <i class="fas fa-lightbulb"></i>
+            <!-- 综合表现加分 -->
+            <a href="{% url 'student_rule_detail' 'comprehensive-performance' %}" class="rule-card-link">
+                <div class="rule-card">
+                    <div class="rule-card-header">
+                        <div class="rule-card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="rule-card-title">综合表现加分</h3>
                     </div>
-                    <h3 class="rule-card-title">创新创业训练</h3>
-                </div>
-                <div class="rule-card-content">
-                    查看创新创业训练相关的加分规则和标准
-                </div>
-            </div>
-            
-            <div class="rule-card">
-                <div class="rule-card-header">
-                    <div class="rule-card-icon">
-                        <i class="fas fa-star"></i>
+                    <div class="rule-card-content">
+                        查看综合表现相关的加分规则和标准
                     </div>
-                    <h3 class="rule-card-title">综合表现加分</h3>
                 </div>
-                <div class="rule-card-content">
-                    查看综合表现相关的加分规则和标准
-                </div>
-            </div>
+            </a>
+        
         </div>
     </div>
 {% endblock %}

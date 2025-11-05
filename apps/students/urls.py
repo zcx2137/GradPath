@@ -24,4 +24,6 @@ urlpatterns = [
     path('submissions/delete/<int:submission_id>/', views.delete_submission, name='delete_submission'),
     # 加分细则
     path('rules/', views.rules, name='rules'),
+    path('rules/<str:rule_type>/', views.rule_detail, name='student_rule_detail'),
+
 ]

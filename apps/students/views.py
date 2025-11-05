@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import StudentProfile, Submission
+from .models import StudentProfile, Submission, Rule
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.forms import ModelForm
@@ -232,6 +232,25 @@ def delete_submission(request, submission_id):
 
 def rules(request):
     return render(request, 'students/rules.html')
+
+
+def rule_detail(request, rule_type):
+    # 获取规则类型对应的中文名称
+    type_mapping = {
+        'student-competition': '学业竞赛',
+        'research-achievement': '科研成果',
+        'innovation-entrepreneurship': '创新创业训练',
+        'comprehensive-performance': '综合表现加分'
+    }
+
+    # 获取该类型的所有规则
+    rules = Rule.objects.filter(rule_type=rule_type).order_by('-created_at')
+
+    return render(request, 'students/rule_detail.html', {
+        'rules': rules,
+        'category_name': type_mapping.get(rule_type, '加分规则'),
+        'rule_type': rule_type
+    })
 
 
 def root_view(request):

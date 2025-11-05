@@ -113,6 +113,16 @@ body {
     color: #666;
     line-height: 1.5;
 }
+.rule-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.rule-card-link:hover .rule-card {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 @media (min-width: 768px) {
     .rule-cards-container {
         grid-template-columns: repeat(2, 1fr);
