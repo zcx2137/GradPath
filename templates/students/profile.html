@@ -89,8 +89,11 @@
                 </div>
             </div>
             <hr>
-{#            <a href="{% url 'upload' %}" type="submit" class="submit-btn">返回主页</a>#}
-            <button type="submit" class="submit-btn">保存</button>
+
+            <div class="button-group">
+                <button type="submit" class="submit-btn">保存</button>
+                <a href="{% url 'user_center' %}" class="submit-btn">返回个人中心</a>
+            </div>
             
             {# 学业成绩等信息临时存放在个人信息页 #}
             <div class="divider"></div>

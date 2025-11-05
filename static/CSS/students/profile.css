@@ -108,9 +108,12 @@ input[readonly] {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
 }
 .submit-btn:hover {
     background-color: #3a7bc8;
+    text-decoration: none;
 }
 
 /* 退出登录链接 */

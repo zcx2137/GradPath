@@ -154,6 +154,19 @@ def profile(request):
     return render(request, 'students/profile.html', {'form': form})
 
 
+@login_required
+def user_center(request):
+    """个人中心视图"""
+    try:
+        profile = request.user.profile
+    except StudentProfile.DoesNotExist:
+        profile = None
+
+    return render(request, 'students/user_center.html', {
+        'profile': profile
+    })
+
+
 # 学生成绩排名
 @login_required
 def ranking(request):

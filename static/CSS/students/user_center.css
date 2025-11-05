@@ -1,0 +1,110 @@
+/* user_center.css - 供 user_center.html 使用的样式（基于 student_profile.css） */
+
+body {
+  background-color: #f8f9fa;
+  color: #212529;
+  font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 0;
+}
+
+.navbar .navbar-brand {
+  font-weight: 700;
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar, .user-avatar-large {
+  background: #0d6efd;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  font-weight: 600;
+}
+
+.user-avatar-large {
+  width: 96px;
+  height: 96px;
+  font-size: 32px;
+  margin-right: 1rem;
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card.user-info-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #212529;
+  text-decoration: none;
+  border-top: 1px solid #e9ecef;
+}
+
+.menu-item:hover {
+  background: #f1f5f9;
+}
+
+.menu-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  border-radius: 6px;
+  margin-right: 0.75rem;
+}
+
+/* 额外的小优化：响应式 */
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 0 0.5rem;
+  }
+  .user-avatar-large {
+    width: 72px;
+    height: 72px;
+    font-size: 24px;
+  }
+}

@@ -13,6 +13,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     # 用户注销
     path('logout/', views.logout_view, name='logout'),
+    # 用户中心
+    path('user_center/', views.user_center, name='user_center'),
     # 个人资料页
     path('profile/', views.profile, name='profile'),
     # 排名页

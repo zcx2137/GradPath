@@ -1,0 +1,87 @@
+{% extends 'students/base.html' %}
+{% load static %}
+
+{% block title %}个人中心 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'CSS/students/user_center.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- 个人中心内容 -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1 class="profile-title">个人中心</h1>
+            <div class="user-info">
+                <span>{{ user.username|default:"用户名" }}</span>
+            </div>
+        </div>
+        
+        <!-- 基本信息卡片 -->
+        <div class="card user-info-card">
+            <div class="card-body">
+                <div class="user-avatar-large">
+                    {{ user.profile.full_name|default:user.username|default:"用"|first }}
+                </div>
+                
+                <div class="user-details">
+                    <div class="user-detail-item">
+                        <strong>姓名</strong>
+                        <span>{{ profile.full_name|default:"请完善信息" }}</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <strong>学号</strong>
+                        <span>{{ profile.student_id|default:"未设置" }}</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <strong>学院专业</strong>
+                        <span>{{ profile.college|default:"未设置" }} - {{ profile.major|default:"未设置" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 功能菜单 -->
+        <div class="card">
+            <div class="card-body" style="padding: 0;">
+                <a href="{% url 'profile' %}" class="menu-item">
+                    <div class="menu-content">
+                        <div class="menu-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>个人信息</span>
+                    </div>
+                    <div class="menu-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+                
+                <a href="#" class="menu-item">
+                    <div class="menu-content">
+                        <div class="menu-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <span>关于GradPath</span>
+                    </div>
+                    <div class="menu-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+                
+                <!-- 退出登录链接 -->
+                <a href="{% url 'logout' %}" class="menu-item" onclick="return confirm('确定要退出登录吗？')">
+                    <div class="menu-content">
+                        <div class="menu-icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <span>退出登录</span>
+                    </div>
+                    <div class="menu-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    
+    </div>
+{% endblock %}
