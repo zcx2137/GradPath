@@ -6,6 +6,7 @@ urlpatterns = [
     path('login/', views.counselor_login, name='counselor_login'),
     path('logout/', views.counselor_logout, name='counselor_logout'),
     path('students/', views.view_all_students, name='view_all_students'),
+    path('export-students/', views.export_students, name='export_students'),
     path('dashboard/', views.counselor_dashboard, name='counselor_dashboard'),
     path('review/', views.review_submissions, name='review_submissions'),
     path('rules/', views.counselor_rules, name='counselor_rules'),

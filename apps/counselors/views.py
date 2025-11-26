@@ -13,6 +13,8 @@ from django.utils import timezone
 from datetime import timedelta
 from .forms import RuleForm
 from django.urls import reverse
+from django.http import HttpResponse
+import csv
 
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
@@ -236,6 +238,43 @@ def view_all_students(request):
     return render(request, 'counselors/all_students.html', {
         'students': students
     })
+
+
+@login_required
+def export_students(request):
+    # 验证辅导员身份
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    # 创建CSV响应
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="学生信息.csv"'
+
+    # 定义需要导出的字段
+    fields = [
+        '学号', '姓名', '学院', '专业', '入学年份',
+        '学业综合成绩', '学术专长成绩', '综合表现成绩', '总成绩'
+    ]
+
+    writer = csv.writer(response)
+    writer.writerow(fields)  # 写入表头
+
+    # 获取所有学生信息并写入CSV
+    students = StudentProfile.objects.all().order_by('-total_score')
+    for student in students:
+        writer.writerow([
+            student.student_id,
+            student.full_name,
+            student.college,
+            student.major,
+            student.enrollment_year or '',
+            student.academic_comprehensive_score or '',
+            student.academic_expertise_score,
+            student.comprehensive_performance_score,
+            student.total_score or ''
+        ])
+
+    return response
 
 
 @login_required

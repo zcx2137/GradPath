@@ -122,10 +122,10 @@ class Submission(models.Model):
     OTHER = 'other'
 
     CATEGORY_CHOICES = [
-        (AWARD_PAPER, '获奖论文'),
-        (COMPETITION, '竞赛获奖'),
-        (VOLUNTEER, '志愿服务'),
-        (SCHOLARSHIP, '奖学金'),
+        (AWARD_PAPER, '科研成果'),
+        (COMPETITION, '学业竞赛'),
+        (VOLUNTEER, '创新创业训练'),
+        (SCHOLARSHIP, '综合表现加分'),
         (OTHER, '其他'),
     ]
 

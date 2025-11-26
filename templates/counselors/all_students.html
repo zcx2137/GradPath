@@ -1,6 +1,11 @@
 {% extends 'counselors/base.html' %}
+{% load static %}
 
 {% block title %}所有学生信息 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'CSS/counselor/all_students.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
     <div class="page-header">
@@ -14,6 +19,13 @@
         <div class="card-body">
             {% if students %}
                 <div class="table-responsive">
+                
+                    <div style="margin-bottom: 15px;">
+                        <a href="{% url 'export_students' %}" class="btn btn-export">
+                            <i class="fas fa-download"></i> 导出学生信息
+                        </a>
+                    </div>
+                
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
