@@ -44,7 +44,8 @@
             <th>工号</th>
             <th>姓名</th>
             <th>用户名</th>
-            <th>学院</th>
+            <th>学院</th>>
+            <th>负责年级</th>
             <th>操作</th>
         </tr>
         {% for counselor in counselors %}
@@ -54,6 +55,7 @@
             <td>{{ counselor.full_name }}</td>
             <td>{{ counselor.user.username }}</td>
             <td>{{ counselor.college }}</td>
+            <td>{{ counselor.grade }}</td>
             <td>
                 <a href="{% url 'edit_user' counselor.user.id %}" class="btn btn-edit">编辑</a>
                 <a href="{% url 'reset_password' counselor.user.id %}" class="btn btn-reset" 

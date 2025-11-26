@@ -11,6 +11,7 @@
         <h1 class="page-title">保研加分小助手</h1>
         <div class="user-info">
             <span class="username">{{ user.username|default:"辅导员用户名" }}</span>
+            <a href="{% url 'counselor_profile' %}" class="btn btn-sm">个人信息</a>
         </div>
     </div>
 

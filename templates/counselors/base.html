@@ -21,7 +21,7 @@
                 </a>
                 <div class="user-info">
                     {% if user.is_authenticated %}
-                        <a href="#" class="d-flex align-items-center text-decoration-none" title="个人资料">
+                        <a href="{% url 'counselor_profile' %}" class="d-flex align-items-center text-decoration-none" title="个人资料">
                             <div class="user-avatar">{{ user.profile.full_name|first|default:"辅" }}</div>
                             <span class="username ms-2">{{ user.profile.full_name|default:"辅导员" }}</span>
                         </a>

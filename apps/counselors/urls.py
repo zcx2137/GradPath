@@ -5,6 +5,7 @@ urlpatterns = [
     path('register/', views.counselor_register, name='counselor_register'),
     path('login/', views.counselor_login, name='counselor_login'),
     path('logout/', views.counselor_logout, name='counselor_logout'),
+    path('profile/', views.counselor_profile, name='counselor_profile'),
     path('students/', views.view_all_students, name='view_all_students'),
     path('export-students/', views.export_students, name='export_students'),
     path('dashboard/', views.counselor_dashboard, name='counselor_dashboard'),

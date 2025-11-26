@@ -28,6 +28,7 @@ class UserCreationForm(forms.Form):
 
     # 辅导员特有字段
     employee_id = forms.CharField(max_length=20, required=False)
+    grade = forms.CharField(max_length=20, required=False, label="负责年级")
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -45,12 +46,15 @@ class UserCreationForm(forms.Form):
             self.add_error('student_id', '学生必须填写学号')
         if user_type == 'counselor' and not cleaned_data.get('employee_id'):
             self.add_error('employee_id', '辅导员必须填写工号')
+        if user_type == 'counselor' and not cleaned_data.get('grade'):
+            self.add_error('grade', '辅导员必须填写负责年级')
 
 
 # 编辑用户表单
 class UserEditForm(forms.Form):
     full_name = forms.CharField(max_length=100)
     college = forms.CharField(max_length=100)
+    grade = forms.CharField(max_length=20, label="负责年级")
 
     # 学生特有字段（学号即用户名）
     student_id = forms.CharField(max_length=20, required=False, label="学号（用户名）")
@@ -248,6 +252,7 @@ def edit_user(request, user_id):
                 user.counselor_profile.full_name = data['full_name']
                 user.counselor_profile.employee_id = new_employee_id
                 user.counselor_profile.college = data['college']
+                user.counselor_profile.grade = data['grade']
                 user.counselor_profile.save()
                 messages.success(request, '辅导员信息已更新，登录用户名同步修改为新工号')
 

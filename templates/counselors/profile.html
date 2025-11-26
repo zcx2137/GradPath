@@ -1,0 +1,52 @@
+<!-- GradPath/templates/counselors/profile.html -->
+{% extends 'counselors/base.html' %}
+{% load static %}
+
+{% block title %}个人信息 - 辅导员端{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>个人信息</h1>
+        <a href="{% url 'counselor_dashboard' %}" class="btn btn-outline-secondary">返回控制台</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>工号（不可修改）</label>
+                    <input type="text" value="{{ profile.employee_id }}" readonly class="form-control">
+                </div>
+                
+                <!-- 姓名编辑框 -->
+                <div class="form-group">
+                    <label>{{ form.full_name.label }}：</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <span style="color: red;">{{ form.full_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- 学院信息，只读 -->
+                <div class="form-group">
+                    <label>所属学院：</label>
+                    <input type="text" value="{{ profile.college }}" readonly class="form-control">
+                </div>
+
+                <!-- 负责年级信息，只读 -->
+                <div class="form-group">
+                    <label>负责年级：</label>
+                    <input type="text" value="{{ profile.grade }}" readonly class="form-control">
+                </div>
+
+                <div class="alert alert-info mt-3" role="alert">
+                    <strong>注意：</strong> 所属学院和负责年级信息无法自行修改，如需调整请联系系统管理员。
+                </div>
+                
+                <button type="submit" class="btn btn-save">保存修改</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

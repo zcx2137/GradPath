@@ -122,6 +122,37 @@ def counselor_dashboard(request):
     })
 
 
+# 辅导员个人信息编辑表单
+class CounselorProfileForm(forms.ModelForm):
+    class Meta:
+        model = CounselorProfile
+        fields = ['full_name']  # 可编辑的字段
+
+
+# 辅导员个人信息页面
+@login_required
+def counselor_profile(request):
+    # 验证是否为辅导员
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    profile = request.user.counselor_profile
+
+    if request.method == 'POST':
+        form = CounselorProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '个人信息已更新')
+            return redirect('counselor_profile')
+    else:
+        form = CounselorProfileForm(instance=profile)
+
+    return render(request, 'counselors/profile.html', {
+        'profile': profile,
+        'form': form
+    })
+
+
 # 审核材料
 @login_required
 def review_submissions(request):

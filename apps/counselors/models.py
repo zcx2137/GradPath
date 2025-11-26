@@ -10,8 +10,8 @@ class CounselorProfile(models.Model):
     )
     full_name = models.CharField("姓名", max_length=100)
     employee_id = models.CharField("工号", max_length=20, unique=True)
-    college = models.CharField("所属学院", max_length=100)
+    college = models.CharField("所属学院", max_length=100, blank=True, default="无")
+    grade = models.CharField("负责年级", max_length=20, blank=True, default="无")
 
     def __str__(self):
-        return self.full_name
-
+        return f"{self.full_name}（{self.college} {self.grade}）"
