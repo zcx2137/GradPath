@@ -4,12 +4,13 @@
 
 {% block extra_css %}
     <link href="{% static 'CSS/admins/dashboard.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 
 {% block content %}
         
+    <!-- 搜索表单 -->
     <div class="filter-form" style="margin: 20px 0;">
-        <!-- 搜索表单 -->
         <form method="get" action="{% url 'admin_dashboard' %}">
             {# 学院筛选 #}
             <select name="college" style="padding: 8px; margin-right: 10px;">
@@ -57,34 +58,65 @@
             {% endif %}
         </form>
     </div>
+    <!-- 学生列表 -->
     <table class="user-table">
+    
         <tr>
-            <th>ID</th>
-            <th>学号</th>
-            <th>姓名</th>
+            <th>序号</th>
+            <th>
+                <div class="sort-control">
+                    <span>学号</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&student_search={{ student_search }}&sort=student_id{% if current_sort == 'student_id' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'student_id' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
+            <th>
+                <div class="sort-control">
+                    <span>姓名</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&student_search={{ student_search }}&sort=full_name{% if current_sort == 'full_name' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'full_name' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
             <th>用户名</th>
-            <th>学院</th>
-            <th>年级</th>
+            <th>
+                <div class="sort-control">
+                    <span>学院</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&student_search={{ student_search }}&sort=college{% if current_sort == 'college' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'college' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
+            <th>
+                <div class="sort-control">
+                    <span>年级</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&student_search={{ student_search }}&sort=grade{% if current_sort == 'grade' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'grade' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-numeric-asc{% else %}fa-sort-numeric-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
             <th>操作</th>
         </tr>
         {% for student in students %}
         <tr>
-            <td>{{ student.id }}</td>
+            <td>{{ forloop.counter }}</td>  <!-- 动态序号，筛选后自动重置 -->
             <td>{{ student.student_id }}</td>
             <td>{{ student.full_name }}</td>
             <td>{{ student.user.username }}</td>
             <td>{{ student.get_college_display }}</td>
             <td>{{ student.grade }}</td>
             <td>
+                <!-- 操作按钮保持不变 -->
                 <a href="{% url 'edit_user' student.user.id %}" class="btn btn-edit">编辑</a>
                 <a href="{% url 'reset_password' student.user.id %}" class="btn btn-reset" 
-                   onclick="return confirm('确定要重置密码密码吗？')">重置密码</a>
+                   onclick="return confirm('确定要重置密码吗？')">重置密码</a>
                 <a href="{% url 'delete_user' student.user.id %}" class="btn btn-delete" 
                    onclick="return confirm('确定要删除吗？')">删除</a>
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6">暂无学生数据</td></tr>
+        <tr><td colspan="7">暂无学生数据</td></tr>  <!-- 注意colspan数量变化 -->
         {% endfor %}
     </table>
 
@@ -107,25 +139,55 @@
             {% endif %}
         </form>
     </div> 
+    <!-- 辅导员列表 -->
     <table class="user-table">
         <tr>
-            <th>ID</th>
-            <th>工号</th>
-            <th>姓名</th>
+            <th>序号</th>
+            <th>
+                <div class="sort-control">
+                    <span>工号</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&counselor_search={{ counselor_search }}&sort=employee_id{% if current_sort == 'employee_id' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'employee_id' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
+            <th>
+                <div class="sort-control">
+                    <span>姓名</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&counselor_search={{ counselor_search }}&sort=full_name{% if current_sort == 'full_name' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'full_name' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
             <th>用户名</th>
-            <th>学院</th>>
-            <th>负责年级</th>
+            <th>
+                <div class="sort-control">
+                    <span>学院</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&counselor_search={{ counselor_search }}&sort=college{% if current_sort == 'college' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'college' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-amount-asc{% else %}fa-sort-amount-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
+            <th>
+                <div class="sort-control">
+                    <span>负责年级</span>
+                    <button type="button" class="sort-btn" onclick="window.location='?college={{ current_college }}&grade={{ current_grade }}&counselor_search={{ counselor_search }}&sort=grade{% if current_sort == 'grade' and sort_dir == 'asc' %}&dir=desc{% else %}&dir=asc{% endif %}'">
+                        <i class="fa {% if current_sort != 'grade' %}fa-sort{% elif sort_dir == 'asc' %}fa-sort-numeric-asc{% else %}fa-sort-numeric-desc{% endif %}"></i>
+                    </button>
+                </div>
+            </th>
             <th>操作</th>
         </tr>
         {% for counselor in counselors %}
         <tr>
-            <td>{{ counselor.id }}</td>
+            <td>{{ forloop.counter }}</td>  <!-- 动态序号 -->
             <td>{{ counselor.employee_id }}</td>
             <td>{{ counselor.full_name }}</td>
             <td>{{ counselor.user.username }}</td>
             <td>{{ counselor.get_college_display }}</td>
             <td>{{ counselor.grade }}</td>
             <td>
+                <!-- 操作按钮保持不变 -->
                 <a href="{% url 'edit_user' counselor.user.id %}" class="btn btn-edit">编辑</a>
                 <a href="{% url 'reset_password' counselor.user.id %}" class="btn btn-reset" 
                    onclick="return confirm('确定要重置密码吗？')">重置密码</a>
@@ -134,7 +196,8 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6">暂无辅导员数据</td></tr>
+        <tr><td colspan="7">暂无辅导员数据</td></tr>  <!-- 注意colspan数量变化 -->
         {% endfor %}
     </table>
+
 {% endblock %}

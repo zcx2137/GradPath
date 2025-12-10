@@ -32,3 +32,54 @@
     padding: 8px 16px;
     text-decoration: none;
 }
+/* 排序控件容器 */
+.sort-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 排序按钮样式 */
+.sort-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280; /* 中性灰代替蓝色 */
+    font-size: 1rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 悬停效果 */
+.sort-btn:hover {
+    background-color: #f1f5f9;
+    color: #1e40af;
+}
+
+/* 当前排序状态高亮 */
+.sort-btn i.fa-sort-amount-asc,
+.sort-btn i.fa-sort-amount-desc,
+.sort-btn i.fa-sort-numeric-asc,
+.sort-btn i.fa-sort-numeric-desc {
+    color: #3b82f6; /* 仅当前排序字段显示主题色 */
+}
+
+/* 表格头部样式调整 */
+.user-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* 增强表格行hover效果 */
+.user-table tr:hover {
+    background-color: #f8fafc;
+}
+
