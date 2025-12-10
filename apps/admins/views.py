@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
@@ -114,12 +115,59 @@ class PasswordResetForm(forms.Form):
 # 管理员 dashboard
 @user_passes_test(is_superadmin, login_url='admin_login')
 def admin_dashboard(request):
-    students = StudentProfile.objects.select_related('user').all()
-    counselors = CounselorProfile.objects.select_related('user').all()
+    # 1. 获取筛选和独立搜索参数
+    filter_college = request.GET.get('college', '')
+    filter_grade = request.GET.get('grade', '')
+    # 学生专用搜索参数
+    student_search = request.GET.get('student_search', '').strip()
+    # 辅导员专用搜索参数
+    counselor_search = request.GET.get('counselor_search', '').strip()
+
+    # 2. 学生筛选（仅受 student_search 影响）
+    students_query = StudentProfile.objects.select_related('user').all()
+    if filter_college:
+        students_query = students_query.filter(college=filter_college)
+    if filter_grade:
+        students_query = students_query.filter(grade=filter_grade)
+    # 仅使用学生搜索关键词
+    if student_search:
+        students_query = students_query.filter(
+            models.Q(full_name__icontains=student_search) |
+            models.Q(student_id__icontains=student_search)
+        )
+    students = students_query
+
+    # 3. 辅导员筛选（仅受 counselor_search 影响）
+    counselors_query = CounselorProfile.objects.select_related('user').all()
+    if filter_college:
+        counselors_query = counselors_query.filter(college=filter_college)
+    if filter_grade:
+        counselors_query = counselors_query.filter(grade=filter_grade)
+    # 仅使用辅导员搜索关键词
+    if counselor_search:
+        counselors_query = counselors_query.filter(
+            models.Q(full_name__icontains=counselor_search) |
+            models.Q(employee_id__icontains=counselor_search)
+        )
+    counselors = counselors_query
+
+    # 4. 下拉框选项（保持不变）
+    college_choices = UserEditForm().fields['college'].choices
+    student_grades = set(StudentProfile.objects.values_list('grade', flat=True))
+    counselor_grades = set(CounselorProfile.objects.values_list('grade', flat=True))
+    all_grades = student_grades.union(counselor_grades)
+    grade_choices = sorted([grade for grade in all_grades if grade])
 
     return render(request, 'admins/dashboard.html', {
         'students': students,
         'counselors': counselors,
+        'college_choices': college_choices,
+        'grade_choices': grade_choices,
+        'current_college': filter_college,
+        'current_grade': filter_grade,
+        # 传递独立的搜索关键词用于回显
+        'student_search': student_search,
+        'counselor_search': counselor_search,
     })
 
 
@@ -182,7 +230,8 @@ def add_user(request):
                     user=user,
                     employee_id=data['employee_id'],
                     full_name=data['full_name'],
-                    college=data.get('college', '')
+                    college=data.get('college', ''),
+                    grade=data['grade']
                 )
 
             messages.success(request, f'{data["user_type"]}账号创建成功')

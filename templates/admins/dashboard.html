@@ -7,7 +7,56 @@
 {% endblock %}
 
 {% block content %}
+        
+    <div class="filter-form" style="margin: 20px 0;">
+        <!-- 搜索表单 -->
+        <form method="get" action="{% url 'admin_dashboard' %}">
+            {# 学院筛选 #}
+            <select name="college" style="padding: 8px; margin-right: 10px;">
+                <option value="">所有学院</option>
+                {% for code, name in college_choices %}
+                    <option value="{{ code }}" {% if current_college == code %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            {# 年级筛选 #}
+            <select name="grade" style="padding: 8px; margin-right: 10px;">
+                <option value="">所有年级</option>
+                {% for grade in grade_choices %}
+                    <option value="{{ grade }}" {% if current_grade == grade %}selected{% endif %}>
+                        {{ grade }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" style="padding: 8px 16px; background: #4a90e2; color: white; border: none; border-radius: 4px;">
+                筛选
+            </button>
+            <a href="{% url 'admin_dashboard' %}" style="margin-left: 10px; color: #666;">重置</a>
+        </form>
+    </div>
+    
     <h2>学生账号列表</h2>
+    <!-- 学生搜索表单 -->
+    <div class="search-container">
+        <form method="get" class="search-form">
+            <!-- 保留当前筛选条件（学院/年级） -->
+            <input type="hidden" name="college" value="{{ current_college }}">
+            <input type="hidden" name="grade" value="{{ current_grade }}">
+            
+            <input type="text" 
+                   name="student_search" 
+                   placeholder="搜索学生姓名或学号..." 
+                   value="{{ student_search }}">
+            <button type="submit" class="search-btn">搜索</button>
+            {% if student_search %}
+                <!-- 清除学生搜索时保留其他参数 -->
+                <a href="?college={{ current_college }}&grade={{ current_grade }}" class="clear-search">清除</a>
+            {% endif %}
+        </form>
+    </div>
     <table class="user-table">
         <tr>
             <th>ID</th>
@@ -40,6 +89,24 @@
     </table>
 
     <h2>辅导员账号列表</h2>
+    <!-- 辅导员搜索表单 -->
+    <div class="search-container">
+        <form method="get" class="search-form">
+            <!-- 保留当前筛选条件（学院/年级） -->
+            <input type="hidden" name="college" value="{{ current_college }}">
+            <input type="hidden" name="grade" value="{{ current_grade }}">
+            
+            <input type="text" 
+                   name="counselor_search" 
+                   placeholder="搜索辅导员姓名或工号..." 
+                   value="{{ counselor_search }}">
+            <button type="submit" class="search-btn">搜索</button>
+            {% if counselor_search %}
+                <!-- 清除辅导员搜索时保留其他参数 -->
+                <a href="?college={{ current_college }}&grade={{ current_grade }}" class="clear-search">清除</a>
+            {% endif %}
+        </form>
+    </div> 
     <table class="user-table">
         <tr>
             <th>ID</th>
