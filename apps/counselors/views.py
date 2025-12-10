@@ -20,7 +20,13 @@ import csv
 class CounselorRegistrationForm(forms.Form):
     employee_id = forms.CharField(label='工号', max_length=20)
     full_name = forms.CharField(label='姓名', max_length=100)
-    college = forms.CharField(label='所属学院', max_length=100)
+    college = forms.ChoiceField(
+        label='所属学院',
+        choices=[
+            ('info', '信息学院'),
+            ('other', '其他'),
+        ]
+    )
     password1 = forms.CharField(label='密码', widget=forms.PasswordInput)
     password2 = forms.CharField(label='确认密码', widget=forms.PasswordInput)
 

@@ -35,7 +35,7 @@
                     </div>
                     <div class="user-detail-item">
                         <strong>学院专业</strong>
-                        <span>{{ profile.college|default:"未设置" }} - {{ profile.major|default:"未设置" }}</span>
+                        <span>{{ profile.get_college_display |default:"未设置" }} - {{ profile.major|default:"未设置" }}</span>
                     </div>
                 </div>
             </div>

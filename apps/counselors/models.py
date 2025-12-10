@@ -8,9 +8,20 @@ class CounselorProfile(models.Model):
         on_delete=models.CASCADE,
         related_name='counselor_profile'
     )
+    # 学院选项
+    COLLEGE_CHOICES = [
+        ('info', '信息学院'),
+        ('other', '其他'),
+    ]
     full_name = models.CharField("姓名", max_length=100)
     employee_id = models.CharField("工号", max_length=20, unique=True)
-    college = models.CharField("所属学院", max_length=100, blank=True, default="无")
+    college = models.CharField(
+        "所属学院",
+        max_length=100,
+        blank=True,
+        default="other",
+        choices=COLLEGE_CHOICES,
+    )
     grade = models.CharField("负责年级", max_length=20, blank=True, default="无")
 
     def __str__(self):

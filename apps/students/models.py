@@ -16,12 +16,25 @@ class StudentProfile(models.Model):
         null=True,
         related_name='profile'  # 反向关联名称
     )
+
+    # 学院选择，此处暂时只设置一个信息学院
+    COLLEGE_CHOICES = [
+        ('info', '信息学院'),
+        ('other', '其他'),
+    ]
+
     # 学生属性
     full_name = models.CharField("姓名", max_length=100, blank=True)
     student_id = models.CharField("学号", max_length=20, unique=True,
                                   validators=[RegexValidator(regex=r'^\d{8,20}$', message='学号必须是8-20位数字')])
     grade = models.CharField("年级", max_length=20, blank=True)
-    college = models.CharField("学院", max_length=100, blank=True)
+    college = models.CharField(
+        "学院",
+        max_length=100,
+        blank=True,
+        choices=COLLEGE_CHOICES,
+        default='other'  # 默认值设为其他
+    )
     department = models.CharField("系别", max_length=100, blank=True)
     major = models.CharField("专业", max_length=100, blank=True)
     enrollment_year = models.PositiveIntegerField("入学年份", null=True, blank=True, help_text="例如：2023")

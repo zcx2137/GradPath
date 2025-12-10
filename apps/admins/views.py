@@ -53,7 +53,13 @@ class UserCreationForm(forms.Form):
 # 编辑用户表单
 class UserEditForm(forms.Form):
     full_name = forms.CharField(max_length=100)
-    college = forms.CharField(max_length=100)
+    college = forms.ChoiceField(
+        choices=[
+            ('info', '信息学院'),
+            ('other', '其他'),
+        ],
+        label="学院"
+    )
     grade = forms.CharField(max_length=20, label="负责年级")
 
     # 学生特有字段（学号即用户名）
