@@ -40,6 +40,18 @@
     </div>
     
     <h2>学生账号列表</h2>
+    <!-- 批量操作区 -->
+    <div class="batch-operations">
+        <button id="selectAllStudents" class="btn btn-select">全选学生</button>
+        <button id="deselectAllStudents" class="btn btn-select">反选学生</button>
+        <select id="selectStudentGrade" class="grade-select">
+            <option value="">选择年级批量选择</option>
+            {% for grade in grade_choices %}
+                <option value="{{ grade }}">{{ grade }}级</option>
+            {% endfor %}
+        </select>
+        <button id="batchDeleteStudents" class="btn btn-delete" onclick="confirmBatchDelete('student')">批量删除选中学生</button>
+    </div>    
     <!-- 学生搜索表单 -->
     <div class="search-container">
         <form method="get" class="search-form">
@@ -60,8 +72,8 @@
     </div>
     <!-- 学生列表 -->
     <table class="user-table">
-    
         <tr>
+            <th>选择</th>
             <th>序号</th>
             <th>
                 <div class="sort-control">
@@ -100,6 +112,7 @@
         </tr>
         {% for student in students %}
         <tr>
+            <td><input type="checkbox" class="student-checkbox" data-id="{{ student.user.id }}" data-grade="{{ student.grade }}"></td>
             <td>{{ forloop.counter }}</td>  <!-- 动态序号，筛选后自动重置 -->
             <td>{{ student.student_id }}</td>
             <td>{{ student.full_name }}</td>
@@ -121,6 +134,18 @@
     </table>
 
     <h2>辅导员账号列表</h2>
+    <!-- 批量操作区 -->
+    <div class="batch-operations">
+        <button id="selectAllCounselors" class="btn btn-select">全选辅导员</button>
+        <button id="deselectAllCounselors" class="btn btn-select">反选辅导员</button>
+        <select id="selectCounselorGrade" class="grade-select">
+            <option value="">选择负责年级批量选择</option>
+            {% for grade in grade_choices %}
+                <option value="{{ grade }}">{{ grade }}级</option>
+            {% endfor %}
+        </select>
+        <button id="batchDeleteCounselors" class="btn btn-delete" onclick="confirmBatchDelete('counselor')">批量删除选中辅导员</button>
+    </div>    
     <!-- 辅导员搜索表单 -->
     <div class="search-container">
         <form method="get" class="search-form">
@@ -142,6 +167,7 @@
     <!-- 辅导员列表 -->
     <table class="user-table">
         <tr>
+            <th>选择</th>
             <th>序号</th>
             <th>
                 <div class="sort-control">
@@ -180,6 +206,7 @@
         </tr>
         {% for counselor in counselors %}
         <tr>
+            <td><input type="checkbox" class="counselor-checkbox" data-id="{{ counselor.user.id }}" data-grade="{{ counselor.grade }}"></td>
             <td>{{ forloop.counter }}</td>  <!-- 动态序号 -->
             <td>{{ counselor.employee_id }}</td>
             <td>{{ counselor.full_name }}</td>
@@ -199,5 +226,88 @@
         <tr><td colspan="7">暂无辅导员数据</td></tr>  <!-- 注意colspan数量变化 -->
         {% endfor %}
     </table>
+    
+    <!-- 批量删除确认模态框 -->
+    <div id="batchDeleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>确定要删除选中的 <span id="deleteCount">0</span> 个账号吗？此操作不可恢复！</p>
+            <form id="batchDeleteForm" method="post" action="{% url 'batch_delete_users' %}">
+                {% csrf_token %}
+                <input type="hidden" name="user_type" id="batchUserType">
+                <input type="hidden" name="user_ids" id="batchUserIds">
+                <button type="submit" class="btn btn-confirm">确认删除</button>
+                <button type="button" class="btn btn-cancel" onclick="hideModal()">取消</button>
+            </form>
+        </div>
+    </div>
 
+    <script>
+    // 全选学生
+    document.getElementById('selectAllStudents').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    });
+    
+    // 反选学生
+    document.getElementById('deselectAllStudents').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !checkbox.checked;  // 取反当前选中状态
+        });
+    });
+    
+    // 按年级选择学生
+    document.getElementById('selectStudentGrade').addEventListener('change', function() {
+        const grade = this.value;
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = grade ? checkbox.getAttribute('data-grade') === grade : false;
+        });
+    });
+    
+    // 全选辅导员
+    document.getElementById('selectAllCounselors').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.counselor-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    });
+    
+    // 反选辅导员
+    document.getElementById('deselectAllCounselors').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.counselor-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !checkbox.checked;  // 取反当前选中状态
+        });
+    });
+    
+    // 按年级选择辅导员
+    document.getElementById('selectCounselorGrade').addEventListener('change', function() {
+        const grade = this.value;
+        const checkboxes = document.querySelectorAll('.counselor-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = grade ? checkbox.getAttribute('data-grade') === grade : false;
+        });
+    });
+    
+    // 显示确认删除模态框
+    function confirmBatchDelete(userType) {
+        const checkboxes = document.querySelectorAll(`.${userType}-checkbox:checked`);
+        const ids = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+        
+        if (ids.length === 0) {
+            alert('请先选择要删除的账号');
+            return;
+        }
+        
+        document.getElementById('deleteCount').textContent = ids.length;
+        document.getElementById('batchUserType').value = userType;
+        document.getElementById('batchUserIds').value = ids.join(',');
+        document.getElementById('batchDeleteModal').style.display = 'block';
+    }
+    
+    // 隐藏模态框
+    function hideModal() {
+        document.getElementById('batchDeleteModal').style.display = 'none';
+    }
+    </script>
+    
 {% endblock %}

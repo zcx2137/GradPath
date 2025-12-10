@@ -273,6 +273,31 @@ def delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 
+# 批量删除用户
+@user_passes_test(is_superadmin, login_url='admin_login')
+def batch_delete_users(request):
+    if request.method == 'POST':
+        user_type = request.POST.get('user_type')
+        user_ids = request.POST.get('user_ids', '').split(',')
+
+        if not user_type or not user_ids or user_ids == ['']:
+            messages.error(request, '请选择要删除的用户')
+            return redirect('admin_dashboard')
+
+        try:
+            # 批量删除用户
+            users = User.objects.filter(id__in=user_ids)
+            count = users.count()
+            users.delete()
+
+            # 修正三元表达式语法
+            user_type_text = "学生" if user_type == "student" else "辅导员"
+            messages.success(request, f'成功删除{count}个{user_type_text}账号')
+        except Exception as e:
+            messages.error(request, f'删除失败: {str(e)}')
+
+    return redirect('admin_dashboard')
+
 # 编辑用户
 @user_passes_test(is_superadmin, login_url='admin_login')
 def edit_user(request, user_id):
