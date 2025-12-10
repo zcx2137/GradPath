@@ -95,16 +95,25 @@ def counselor_dashboard(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')  # 非辅导员跳转到学生登录
 
-    # 获取待审核申请
+    counselor = request.user.counselor_profile
+    # 获取当前辅导员所在学院和负责年级
+    counselor_college = counselor.college
+    counselor_grade = counselor.grade
+
+    # 获取待审核申请(只显示本学院学生的申请)
     latest_pending_submissions = Submission.objects.filter(
         approved=False,
-        rejected=False
+        rejected=False,
+        student__college=counselor_college,  # 过滤学生学院
+        student__grade=counselor_grade       # 过滤学生年级
     ).select_related('student').order_by('-timestamp')[:5]
 
     # 辅导员控制面板中的待审核数量统计
     pending_count = Submission.objects.filter(
         approved=False,
-        rejected=False  # 同样排除已驳回的申请
+        rejected=False,
+        student__college=counselor_college,  # 过滤学生学院
+        student__grade=counselor_grade       # 过滤学生年级
     ).count()
 
     # 计算本周处理数
@@ -112,13 +121,20 @@ def counselor_dashboard(request):
     start_of_week = today - timedelta(days=today.weekday())
     handled_this_week = Submission.objects.filter(
         approved=True,
-        timestamp__date__gte=start_of_week
+        timestamp__date__gte=start_of_week,
+        student__college=counselor_college,  # 过滤学生学院
+        student__grade=counselor_grade       # 过滤学生年级
     ).count()
 
     # 计算当前生效的加分规则总数
     rules_count = Rule.objects.count()
 
-    total_students = StudentProfile.objects.count()
+    # 只统计本学院本年级的学生
+    total_students = StudentProfile.objects.filter(
+        college=counselor_college,
+        grade=counselor_grade
+    ).count()
+
     return render(request, 'counselors/dashboard.html', {
         'pending_count': pending_count,
         'total_students': total_students,
@@ -165,9 +181,14 @@ def review_submissions(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
+    counselor_college = request.user.counselor_profile.college
+    counselor_grade = request.user.counselor_profile.grade
+
     pending_submissions = Submission.objects.filter(
         approved=False,  # 未通过
-        rejected=False   # 未驳回
+        rejected=False,  # 未驳回
+        student__college=counselor_college,     # 仅显示本学院学生的提交
+        student__grade=counselor_grade          # 仅显示本年级学生的提交
     ).select_related('student').order_by('-timestamp')  # 保留预加载 student，避免模板报错
 
     return render(request, 'counselors/review_submissions.html', {
@@ -271,7 +292,13 @@ def view_all_students(request):
     if not hasattr(request.user, 'counselor_profile'):
         return redirect('login')
 
-    students = StudentProfile.objects.all().select_related('user')
+    counselor_college = request.user.counselor_profile.college
+    counselor_grade = request.user.counselor_profile.grade
+    students = StudentProfile.objects.filter(
+        college=counselor_college,  # 学院过滤
+        grade=counselor_grade       # 年级过滤
+    ).order_by('-total_score')
+
     return render(request, 'counselors/all_students.html', {
         'students': students
     })

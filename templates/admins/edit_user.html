@@ -40,6 +40,13 @@
                 <span style="color: red;">{{ form.student_id.errors.0 }}</span>
             {% endif %}
         </div>
+        <div>
+            <label>{{ form.grade.label }}:</label>
+            {{ form.grade }}
+            {% if form.grade.errors %}
+                <span style="color: red;">{{ form.grade.errors.0 }}</span>
+            {% endif %}
+        </div>    
         {% else %}
         <div>
             <label>{{ form.employee_id.label }}:</label>

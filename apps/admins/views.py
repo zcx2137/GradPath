@@ -60,7 +60,7 @@ class UserEditForm(forms.Form):
         ],
         label="学院"
     )
-    grade = forms.CharField(max_length=20, label="负责年级")
+    grade = forms.CharField(max_length=20, label="年级")  # 通用年级字段（学生和辅导员共用）
 
     # 学生特有字段（学号即用户名）
     student_id = forms.CharField(max_length=20, required=False, label="学号（用户名）")
@@ -225,13 +225,15 @@ def edit_user(request, user_id):
         initial_data = {
             'full_name': user.profile.full_name,
             'student_id': user.profile.student_id,  # 学号初始值=当前用户名
-            'college': user.profile.college
+            'college': user.profile.college,
+            'grade': user.profile.grade  # 学生年级初始值
         }
     elif is_counselor:
         initial_data = {
             'full_name': user.counselor_profile.full_name,
             'employee_id': user.counselor_profile.employee_id,  # 工号初始值=当前用户名
-            'college': user.counselor_profile.college
+            'college': user.counselor_profile.college,
+            'grade': user.counselor_profile.grade
         }
 
     if request.method == 'POST':
@@ -247,8 +249,9 @@ def edit_user(request, user_id):
                 user.profile.full_name = data['full_name']
                 user.profile.student_id = new_student_id
                 user.profile.college = data['college']
+                user.profile.grade = data['grade']
                 user.profile.save()
-                messages.success(request, '学生信息已更新，登录用户名同步修改为新学号')
+                messages.success(request, '学生信息已更新')
 
             elif is_counselor:
                 # 辅导员：同步工号和用户名
@@ -260,7 +263,7 @@ def edit_user(request, user_id):
                 user.counselor_profile.college = data['college']
                 user.counselor_profile.grade = data['grade']
                 user.counselor_profile.save()
-                messages.success(request, '辅导员信息已更新，登录用户名同步修改为新工号')
+                messages.success(request, '辅导员信息已更新')
 
             return redirect('admin_dashboard')
     else:

@@ -104,12 +104,17 @@ class StudentProfile(models.Model):
         return self.full_name or self.student_id or str(self.user)
 
     def get_rank(self):
-        """计算学生的排名（按总分降序）"""
-        all_students = StudentProfile.objects.exclude(total_score__isnull=True)
-        total_count = all_students.count()
+        """计算学生在本学院本年级的排名（按总分降序）"""
+        # 只比较同学院同年级的学生
+        same_group = StudentProfile.objects.filter(
+            college=self.college,
+            grade=self.grade,
+            total_score__isnull=False
+        )
+        total_count = same_group.count()
 
         # 总分高于当前学生的人数 + 1 就是排名
-        higher_count = all_students.filter(total_score__gt=self.total_score).count()
+        higher_count = same_group.filter(total_score__gt=self.total_score).count()
         return (higher_count + 1, total_count)
 
     def save(self, *args, **kwargs):

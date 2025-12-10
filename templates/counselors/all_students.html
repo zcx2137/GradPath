@@ -46,7 +46,7 @@
                                 <td>{% with rank_data=student.get_rank %}{{ rank_data.0 }}{% endwith %}</td>
                                 <td>{{ student.student_id }}</td>
                                 <td>{{ student.full_name }}</td>
-                                <td>{{ student.college }}</td>
+                                <td>{{ student.get_college_display }}</td>
                                 <td>{{ student.academic_comprehensive_score|default:"未设置" }}</td>
                                 <td>{{ student.academic_expertise_score }}</td>
                                 <td>{{ student.comprehensive_performance_score }}</td>

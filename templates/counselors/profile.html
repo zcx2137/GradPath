@@ -32,7 +32,7 @@
                 <!-- 学院信息，只读 -->
                 <div class="form-group">
                     <label>所属学院：</label>
-                    <input type="text" value="{{ profile.college }}" readonly class="form-control">
+                    <input type="text" value="{{ profile.get_college_display }}" readonly class="form-control">
                 </div>
 
                 <!-- 负责年级信息，只读 -->
