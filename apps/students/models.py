@@ -105,13 +105,21 @@ class StudentProfile(models.Model):
 
     def get_rank(self):
         """计算学生在本学院本年级的排名（按总分降序）"""
-        # 只比较同学院同年级的学生
+        # 新增：检查必要字段是否存在，若不存在返回默认排名
+        if not all([self.college, self.grade]):
+            return (0, 0)  # 学院或年级未设置时，返回(0,0)避免查询错误
+
+        # 只比较同学院同年级且有总成绩的学生
         same_group = StudentProfile.objects.filter(
             college=self.college,
             grade=self.grade,
-            total_score__isnull=False
+            total_score__isnull=False  # 排除无总成绩的学生
         )
         total_count = same_group.count()
+
+        # 处理当前学生无总成绩的情况
+        if self.total_score is None:
+            return (total_count + 1, total_count)  # 排在所有有成绩的学生之后
 
         # 总分高于当前学生的人数 + 1 就是排名
         higher_count = same_group.filter(total_score__gt=self.total_score).count()
