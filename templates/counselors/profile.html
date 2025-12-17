@@ -4,49 +4,76 @@
 
 {% block title %}个人信息 - 辅导员端{% endblock %}
 
-{% block content %}
-    <div class="page-header">
-        <h1>个人信息</h1>
-        <a href="{% url 'counselor_dashboard' %}" class="btn btn-outline-secondary">返回控制台</a>
-    </div>
+{% block extra_css %}
+<link href="{% static 'CSS/counselor/profile.css' %}" rel="stylesheet">
+{% endblock %}
 
-    <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label>工号（不可修改）</label>
-                    <input type="text" value="{{ profile.employee_id }}" readonly class="form-control">
-                </div>
-                
-                <!-- 姓名编辑框 -->
-                <div class="form-group">
-                    <label>{{ form.full_name.label }}：</label>
+{% block content %}
+<div class="page-header">
+    <div class="title-group">
+        <h1 class="page-title">个人信息</h1>
+    </div>
+    <div class="header-actions">
+        <a href="{% url 'counselor_dashboard' %}" class="ghost-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回控制台</span>
+        </a>
+    </div>
+</div>
+
+<div class="profile-layout">
+    <section class="profile-summary">
+        <div class="profile-top">
+            <div class="profile-avatar">
+                {{ profile.full_name|default:form.full_name.value|default:"辅"|first }}
+            </div>
+            <div>
+                <h2 class="profile-name">{{ form.full_name.value|default:profile.full_name|default:"辅导员" }}</h2>
+                <p class="profile-role">辅导员 · {{ profile.get_college_display|default:"学院未设置" }}</p>
+            </div>
+        </div>
+
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">工号</span>
+                <span class="info-value">{{ profile.employee_id|default:"-" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">所属学院</span>
+                <span class="info-value">{{ profile.get_college_display|default:"-" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">负责年级</span>
+                <span class="info-value">{{ profile.grade|default:"-" }}</span>
+            </div>
+        </div>
+
+        <div class="inline-hint">
+            <i class="fas fa-info-circle"></i>
+            <span>学院和负责年级由系统管理员维护。</span>
+        </div>
+    </section>
+
+    <section class="profile-form-card">
+        <h3 class="section-title">可编辑信息</h3>
+        <form method="post" class="profile-form">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>{{ form.full_name.label }}</label>
                     {{ form.full_name }}
                     {% if form.full_name.errors %}
-                        <span style="color: red;">{{ form.full_name.errors.0 }}</span>
+                        <span class="field-error">{{ form.full_name.errors.0 }}</span>
                     {% endif %}
                 </div>
-                
-                <!-- 学院信息，只读 -->
-                <div class="form-group">
-                    <label>所属学院：</label>
-                    <input type="text" value="{{ profile.get_college_display }}" readonly class="form-control">
-                </div>
+            </div>
 
-                <!-- 负责年级信息，只读 -->
-                <div class="form-group">
-                    <label>负责年级：</label>
-                    <input type="text" value="{{ profile.grade }}" readonly class="form-control">
-                </div>
-
-                <div class="alert alert-info mt-3" role="alert">
-                    <strong>注意：</strong> 所属学院和负责年级信息无法自行修改，如需调整请联系系统管理员。
-                </div>
-                
-                <button type="submit" class="btn btn-save">保存修改</button>
-            </form>
-        </div>
-    </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">保存修改</button>
+                <a href="{% url 'counselor_dashboard' %}" class="btn-ghost">取消</a>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}

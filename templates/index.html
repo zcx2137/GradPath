@@ -1,33 +1,92 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>登录选择</title>
-    <style>
-        .container {
-            text-align: center;
-            margin-top: 100px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            margin: 20px;
-            background-color: #4a90e2;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 18px;
-        }
-        .btn:hover {
-            background-color: #3a7bc8;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选择登录身份 - 保研加分小助手</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="{% static 'CSS/base.css' %}" rel="stylesheet">
+    <link href="{% static 'CSS/index.css' %}" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <meta name="description" content="保研加分小助手 - 请选择登录身份进入系统">
+    <meta name="theme-color" content="#4a6cf7">
+    <style>/* 兜底：若index.css未加载，确保基础布局可用 */
+        .role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+        .role-card{background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:24px;text-align:left;transition:.2s}
+        .role-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+        .role-icon{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;margin-bottom:12px}
+        .hero{padding:28px 0 8px}
+        .hero h1{font-weight:800;margin:0 0 8px}
+        .hero p{color:#666;margin:0}
+        .card-actions{display:flex;gap:10px;margin-top:14px}
+        .btn-primary{padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border:none;box-shadow:var(--card-shadow)}
+        .btn-ghost{padding:10px 14px;border-radius:10px;border:1px solid var(--light-gray);background:#fff}
     </style>
+    {% csrf_token %}
+    
+    
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'root' %}" class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>保研加分小助手</span>
+                </a>
+                <div class="user-info">
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">学生登录</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
-        <h1>保研加分小助手</h1>
-        <a href="{% url 'login' %}" class="btn">学生登录</a>
-        <a href="{% url 'counselor_login' %}" class="btn">辅导员登录</a>
+        <div class="main-content">
+            <section class="hero">
+                <h1 class="page-title">选择登录身份</h1>
+                <p class="subtitle">请选择您的身份进入系统，以便获得匹配的功能服务。</p>
+            </section>
+
+            <section class="role-grid" aria-label="角色登录选择">
+                <div class="role-card" role="region" aria-labelledby="student-title">
+                    <div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 id="student-title" class="feature-title">学生</h3>
+                    <p class="feature-description">查看加分细则、提交材料、获取最终排名。</p>
+                    <div class="card-actions">
+                        <a href="{% url 'login' %}" class="btn btn-primary">学生登录</a>
+                    </div>
+                </div>
+
+                <div class="role-card" role="region" aria-labelledby="counselor-title">
+                    <div class="role-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3 id="counselor-title" class="feature-title">辅导员</h3>
+                    <p class="feature-description">审核材料、管理规则、查看学生信息与周统计。</p>
+                    <div class="card-actions">
+                        <a href="{% url 'counselor_login' %}" class="btn btn-primary">辅导员登录</a>
+                    </div>
+                </div>
+
+                <div class="role-card" role="region" aria-labelledby="admin-title">
+                    <div class="role-icon"><i class="fas fa-user-shield"></i></div>
+                    <h3 id="admin-title" class="feature-title">管理员</h3>
+                    <p class="feature-description">系统用户与权限管理，重置密码与维护。</p>
+                    <div class="card-actions">
+                        <a href="{% url 'admin_login' %}" class="btn btn-primary">管理员登录</a>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>保研加分小助手 &copy; 2025 - 助力您的保研之路</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
