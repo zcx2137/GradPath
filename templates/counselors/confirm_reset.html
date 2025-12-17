@@ -1,0 +1,29 @@
+{% extends 'counselors/base.html' %}
+
+{% block title %}确认撤销审核 - 保研加分小助手{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">确认撤销审核</h2>
+                <p>你确定要撤销以下材料的审核结果吗？</p>
+                <p><strong>学生：</strong>{{ submission.student.full_name }} ({{ submission.student.student_id }})</p>
+                <p><strong>申请项目：</strong>{{ submission.get_category_display }}</p>
+                <p><strong>当前状态：</strong>
+                    {% if submission.approved %}
+                        <span class="badge bg-success">通过</span>
+                    {% else %}
+                        <span class="badge bg-danger">驳回</span>
+                    {% endif %}
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">确认撤销</button>
+                    <a href="{% url 'reviewed_submissions' %}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

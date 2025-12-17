@@ -15,6 +15,7 @@ from .forms import RuleForm
 from django.urls import reverse
 from django.http import HttpResponse
 import csv
+from django.db.models import Q
 
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
@@ -206,6 +207,7 @@ def approve_submission(request, submission_id):
     if request.method == 'POST':
         submission.approved = True
         submission.approved_score = request.POST.get('approved_score')
+        submission.reviewer = request.user.counselor_profile
         submission.save()
 
         # 根据材料类型更新对应成绩（原有逻辑）
@@ -242,6 +244,7 @@ def reject_submission(request, submission_id):
         submission.approved = False
         submission.rejected = True
         submission.reject_reason = request.POST.get('reject_reason')
+        submission.reviewer = request.user.counselor_profile
         submission.save()
 
         # 创建"审核驳回"通知
@@ -284,6 +287,74 @@ def review_detail(request, submission_id):
     return render(request, 'counselors/review_detail.html', {
         'submission': submission  # 此时 submission 已包含 student 关联数据
     })
+
+
+# 已审核材料页面
+@login_required
+def reviewed_submissions(request):
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    counselor = request.user.counselor_profile
+    counselor_college = counselor.college
+    counselor_grade = counselor.grade
+
+    # 修正：位置参数（Q对象）放在关键字参数前面
+    reviewed_submissions = Submission.objects.filter(
+        # Q对象作为位置参数，放在最前面
+        Q(approved=True) | Q(rejected=True),
+        # 关键字参数放在后面
+        reviewer=counselor,
+        student__college=counselor_college,
+        student__grade=counselor_grade
+    ).select_related('student', 'reviewer').order_by('-timestamp')
+
+    return render(request, 'counselors/reviewed_submissions.html', {
+        'submissions': reviewed_submissions
+    })
+
+
+# 审核撤销功能
+@login_required
+def reset_submission(request, submission_id):
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
+
+    submission = get_object_or_404(Submission, id=submission_id, reviewer=request.user.counselor_profile)
+
+    if request.method == 'POST':
+        # 如果之前是通过的，需要减去已加的分数
+        if submission.approved:
+            student = submission.student
+            score = Decimal(submission.approved_score or 0)
+            academic_categories = ['thesis', 'competition', 'research', 'other_academic']
+            comprehensive_categories = ['volunteer', 'leadership', 'social_practice', 'other_comprehensive']
+
+            if submission.category in academic_categories:
+                student.academic_expertise_score -= score
+            elif submission.category in comprehensive_categories:
+                student.comprehensive_performance_score -= score
+            student.save()
+
+        # 重置审核状态
+        submission.approved = False
+        submission.rejected = False
+        submission.approved_score = None
+        submission.reject_reason = None
+        submission.reviewer = None
+        submission.save()
+
+        # 创建通知
+        Notification.objects.create(
+            recipient=submission.student.user,
+            title="材料审核状态更新",
+            content=f"您提交的「{submission.get_category_display()}」材料审核状态已重置，将重新审核",
+            type='submission'
+        )
+
+        return redirect('reviewed_submissions')
+
+    return render(request, 'counselors/confirm_reset.html', {'submission': submission})
 
 
 # 查看学生信息

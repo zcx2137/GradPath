@@ -54,6 +54,7 @@
                             <th>自评加分</th>
                             <th>状态</th>
                             <th>审核加分</th>
+                            <th>审核人</th>
                             <th>提交时间</th>
                             <th>操作</th>
                         </tr>
@@ -86,6 +87,13 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ sub.approved_score|default:"-" }}</td>
+                                <td>
+                                    {% if sub.reviewer %}
+                                        {{ sub.reviewer.full_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>                            
                                 <td>{{ sub.timestamp|date:"Y-m-d H:i:s" }}</td>
                                 <td>
                                     <div class="action-buttons">

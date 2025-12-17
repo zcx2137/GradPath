@@ -10,7 +10,9 @@
                 <a href="{% url 'counselor_dashboard' %}" class="btn btn-outline-secondary btn-sm">返回控制台</a>
         </div>
     </div>
-
+<a href="{% url 'reviewed_submissions' %}" class="nav-link">
+    <i class="fas fa-check-circle"></i> 已审核材料
+</a>
     <div class="card">
         <div class="card-body">
             {% if submissions %}

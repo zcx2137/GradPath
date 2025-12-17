@@ -155,6 +155,13 @@ class Submission(models.Model):
         (OTHER, '其他'),
     ]
 
+    reviewer = models.ForeignKey(
+        'counselors.CounselorProfile',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviewed_submissions'
+    )
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, verbose_name="学生")
     category = models.CharField("加分项类型", max_length=20, choices=CATEGORY_CHOICES, default=OTHER)
     remarks = models.TextField("备注", blank=True, default="")
