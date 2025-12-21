@@ -1,33 +1,101 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <title>设置学业成绩</title>
-</head>
-<body>
-    <div class="nav">
-        <a href="{% url 'view_all_students' %}">返回学生列表</a>
-        <a href="{% url 'counselor_dashboard' %}">返回控制台</a>
+{% extends 'counselors/base.html' %}
+{% load static %}
+
+{% block title %}设置学业成绩 - 保研加分小助手{% endblock %}
+
+{% block extra_css %}
+    <!-- 复用规则编辑页的表单样式，保证风格统一 -->
+    <link href="{% static 'CSS/counselor/edit_rule.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="edit-rule-container">
+    <!-- 页面头部：返回按钮 + 标题 -->
+    <div class="page-header">
+        <div class="header-content">
+            <a href="{% url 'view_all_students' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>返回学生列表</span>
+            </a>
+            <h1 class="page-title">设置学业综合成绩</h1>
+            <p class="page-subtitle">为 {{ student.full_name }}（学号：{{ student.student_id }}）设置/更新学业成绩</p>
+        </div>
     </div>
 
-    <h2>设置 {{ student.full_name }} ({{ student.student_id }}) 的学业综合成绩</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="academic_comprehensive_score">学业综合成绩：</label>
-            <input type="number" name="academic_comprehensive_score" id="academic_comprehensive_score" 
-                   step="0.1" min="0" max="100" 
-                   value="{{ student.academic_comprehensive_score|default:'' }}" required>
+    <!-- 表单卡片 -->
+    <div class="form-section">
+        <div class="form-card">
+            <div class="card-header">
+                <h2 class="card-title">学业成绩设置</h2>
+                <div class="card-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+
+            <form method="post" class="rule-form">
+                {% csrf_token %}
+
+                <!-- 当前成绩概览（只读） -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label">
+                            <label>当前学术专长成绩</label>
+                        </div>
+                        <div class="form-field">
+                            <input type="text" value="{{ student.academic_expertise_score|default:'-' }}" disabled>
+                            <i class="form-icon fas fa-flask"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">
+                            <label>当前综合表现成绩</label>
+                        </div>
+                        <div class="form-field">
+                            <input type="text" value="{{ student.comprehensive_performance_score|default:'-' }}" disabled>
+                            <i class="form-icon fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 输入综合学业成绩 -->
+                <div class="form-group">
+                    <div class="form-label">
+                        <label for="academic_comprehensive_score">学业综合成绩</label>
+                        <span class="required">*</span>
+                    </div>
+                    <div class="score-input-group">
+                        <input
+                            type="number"
+                            name="academic_comprehensive_score"
+                            id="academic_comprehensive_score"
+                            step="0.1"
+                            min="0"
+                            max="100"
+                            value="{{ student.academic_comprehensive_score|default:'' }}"
+                            required
+                        >
+                        <span class="score-unit">分</span>
+                        <i class="form-icon fas fa-chart-line"></i>
+                    </div>
+                    <div class="field-hint">
+                        <i class="fas fa-info-circle"></i>
+                        支持 0 - 100，步进 0.1；建议保留一位小数
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="form-actions">
+                    <a href="{% url 'view_all_students' %}" class="cancel-btn">
+                        <i class="fas fa-times"></i>
+                        取消
+                    </a>
+                    <button type="submit" class="save-btn">
+                        <i class="fas fa-save"></i>
+                        保存
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label>当前学术专长成绩：</label>
-            <span>{{ student.academic_expertise_score }}</span>
-        </div>
-        <div class="form-group">
-            <label>当前综合表现成绩：</label>
-            <span>{{ student.comprehensive_performance_score }}</span>
-        </div>
-        <button type="submit" class="btn btn-success">保存</button>
-    </form>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}
