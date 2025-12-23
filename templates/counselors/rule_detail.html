@@ -29,7 +29,7 @@
                     <div class="rule-item">
                         <div class="rule-content">
                             <div class="rule-header">
-                                <h3 class="rule-title">规则 #{{ rule.id }}</h3>
+                                <h3 class="rule-title">规则 {{ forloop.counter }}</h3>
                                 <div class="rule-meta">
                                     <span class="create-time">创建时间：{{ rule.created_at|date:"Y-m-d H:i" }}</span>
                                     {% if rule.updated_at != rule.created_at %}
