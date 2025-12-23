@@ -47,7 +47,7 @@
                 <table class="applications-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>序号</th>
                             <th>加分项类型</th>
                             <th>备注</th>
                             <th>文件</th>
@@ -63,7 +63,7 @@
                         {% if submissions %}
                             {% for sub in submissions %}
                             <tr>
-                                <td>{{ sub.id }}</td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>{{ sub.category.get_group_display }}（{{ sub.category.name }}）</td>
                                 <td>{{ sub.remarks|default:"(无)" }}</td>
                                 <td>
