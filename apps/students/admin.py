@@ -5,7 +5,7 @@
 """
 
 from django.contrib import admin
-from .models import StudentProfile, Submission
+from .models import StudentProfile, Submission, SubmissionCategory
 
 
 @admin.register(StudentProfile)
@@ -14,8 +14,13 @@ class StudentProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'full_name')
 
 
+@admin.register(SubmissionCategory)
+class SubmissionCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'group', 'name', 'default_score', 'max_score')
+    list_filter = ('group',)  # 按大类筛选
+
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
-    """学生提交模型的Admin配置。"""
     list_display = ('id', 'student', 'category', 'self_rating', 'approved', 'approved_score', 'timestamp')
-    list_filter = ('approved', 'category')
+    list_filter = ('category__group', 'approved')

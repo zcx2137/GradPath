@@ -138,22 +138,33 @@ class StudentProfile(models.Model):
         super().save(*args, **kwargs)
 
 
+class SubmissionCategory(models.Model):
+    """加分项细分分类模型"""
+    # 大类（与原category对应）
+    CATEGORY_GROUP = [
+        ('award_paper', '科研成果'),
+        ('competition', '学业竞赛'),
+        ('volunteer', '创新创业训练'),
+        ('scholarship', '综合表现加分'),
+        ('other', '其他'),
+    ]
+
+    group = models.CharField("大类", max_length=20, choices=CATEGORY_GROUP)  # 关联到大类
+    name = models.CharField("小类名称", max_length=100)  # 例如："A类论文发表"
+    description = models.TextField("说明", blank=True)  # 小类的详细说明
+    default_score = models.DecimalField("预设分值", max_digits=5, decimal_places=1)  # 预设分值
+    max_score = models.DecimalField("最大分值", max_digits=5, decimal_places=1, null=True, blank=True)  # 最大限制（可为空）
+
+    def __str__(self):
+        return f"{self.get_group_display()}-{self.name}"
+
+    class Meta:
+        verbose_name = "加分项细分分类"
+        verbose_name_plural = "加分项细分分类"
+
+
 # 学生提交信息
 class Submission(models.Model):
-    # 预设加分项类型选项
-    AWARD_PAPER = 'award_paper'
-    COMPETITION = 'competition'
-    VOLUNTEER = 'volunteer'
-    SCHOLARSHIP = 'scholarship'
-    OTHER = 'other'
-
-    CATEGORY_CHOICES = [
-        (AWARD_PAPER, '科研成果'),
-        (COMPETITION, '学业竞赛'),
-        (VOLUNTEER, '创新创业训练'),
-        (SCHOLARSHIP, '综合表现加分'),
-        (OTHER, '其他'),
-    ]
 
     reviewer = models.ForeignKey(
         'counselors.CounselorProfile',
@@ -163,7 +174,12 @@ class Submission(models.Model):
         related_name='reviewed_submissions'
     )
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, verbose_name="学生")
-    category = models.CharField("加分项类型", max_length=20, choices=CATEGORY_CHOICES, default=OTHER)
+    category = models.ForeignKey(
+        SubmissionCategory,
+        on_delete=models.PROTECT,  # 保护模式：防止删除被引用的分类
+        related_name="submissions",
+        verbose_name="加分项细分分类"
+    )
     remarks = models.TextField("备注", blank=True, default="")
     file = models.FileField("提交文件", upload_to='uploads/', null=True, blank=True)
     self_rating = models.DecimalField("自评加分", max_digits=5, decimal_places=1, default=0)

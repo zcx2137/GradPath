@@ -64,7 +64,7 @@
                             {% for sub in submissions %}
                             <tr>
                                 <td>{{ sub.id }}</td>
-                                <td>{{ sub.get_category_display }}</td>
+                                <td>{{ sub.category.get_group_display }}（{{ sub.category.name }}）</td>
                                 <td>{{ sub.remarks|default:"(无)" }}</td>
                                 <td>
                                     {% if sub.file %}

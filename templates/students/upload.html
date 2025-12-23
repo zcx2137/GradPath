@@ -16,10 +16,10 @@
                 <span>{{ user.username|default:"用户名" }}</span>
             </div>
         </div>
-        
+
         <form method="POST" enctype="multipart/form-data" id="add-item-form">
             {% csrf_token %}
-            
+
             <!-- 加分类型选择 -->
             <div class="card form-section">
                 <div class="card-body">
@@ -30,7 +30,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- 证明材料上传 -->
             <div class="card form-section">
                 <div class="card-body">
@@ -49,7 +49,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- 其他表单字段 -->
             {% for field in form %}
                 {% if field.name != 'category' and field.name != 'file' %}
@@ -64,22 +64,22 @@
                 </div>
                 {% endif %}
             {% endfor %}
-            
+
             <!-- 提交按钮 -->
             <div class="submit-section">
                 <button type="submit" class="btn btn-primary submit-button">提交申请</button>
             </div>
-        
+
             <div class="navigation mt-4">
                 <p>
                     <a href="{% url 'submissions' %}" class="btn btn-primary">查看我的提交</a>
                     <a href="{% url 'index' %}" class="btn btn-primary ms-2">返回主页</a>
                 </p>
             </div>
-        
+
         </form>
-        
-            
+
+
     </div>
 
     <script>
@@ -112,7 +112,7 @@
     document.getElementById('uploadArea').addEventListener('drop', function(e) {
         e.preventDefault();
         this.classList.remove('active');
-        
+
         if (e.dataTransfer.files.length > 0) {
             document.getElementById('id_file').files = e.dataTransfer.files;
             // 触发 change 事件来更新文件名显示

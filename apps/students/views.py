@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import StudentProfile, Submission, Rule, Notification
+from .models import StudentProfile, Submission, Rule, Notification, SubmissionCategory
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.forms import ModelForm
@@ -57,12 +57,20 @@ class SubmissionForm(ModelForm):
         widgets = {
             'remarks': forms.Textarea(attrs={'rows': 3, 'placeholder': '请填写相关说明或证明信息'}),
             'self_rating': forms.NumberInput(attrs={'min': 0, 'step': 0.5, 'placeholder': '请填写自评分数'}),
+            # 分类选择按大类分组显示
+            'category': forms.Select(attrs={'class': 'form-select'}),
         }
         labels = {
-            'category': '加分项类型',
+            'category': '加分项类型（细分）',
             'remarks': '备注说明',
             'self_rating': '自评加分',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 优化下拉选项：按大类分组显示小类
+        self.fields['category'].queryset = SubmissionCategory.objects.all().order_by('group', 'name')
+        self.fields['category'].label_from_instance = lambda obj: f"{obj.get_group_display()} - {obj.name}"
 
 
 # 用户注册

@@ -42,8 +42,16 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">申请类型</span>
-                    <div class="info-value">{{ submission.get_category_display }}</div>
+                    <div class="info-value">{{ submission.category.get_group_display }}（{{ submission.category.name }}）</div>
                 </div>
+                <div class="info-item">
+                    <span class="info-label">预设分值</span>
+                    <div class="info-value">{{ submission.category.default_score }}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">最大分值</span>
+                    <div class="info-value">{{ submission.category.max_score|default:"无限制" }}</div>
+                </div>                
                 <div class="info-item">
                     <span class="info-label">自评分数</span>
                     <div class="info-value">{{ submission.self_rating }}</div>
