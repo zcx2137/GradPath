@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
+from .forms import StudentLoginForm
 
 
 # 学生注册表单
@@ -99,25 +100,32 @@ def register(request):
 # 用户登录
 def login_view(request):
     if request.method == 'POST':
-        student_id = request.POST.get('student_id')
-        password = request.POST.get('password')
-
-        # 验证表单数据
-        if not student_id or not password:
+        form = StudentLoginForm(request.POST)
+        # 先验证表单（包括验证码）
+        if not form.is_valid():
             return render(request, 'students/login.html', {
-                'error': '请输入学号和密码',
+                'form': form,
+                'error': '请检查输入或验证码'
             })
 
-        # 使用学号（即用户名）验证
+        # 验证通过后获取数据
+        student_id = form.cleaned_data['student_id']
+        password = form.cleaned_data['password']
+
+        # 后续验证逻辑不变
         user = authenticate(username=student_id, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('index')  # 登录后跳转到主页
+            return redirect('index')
         else:
             return render(request, 'students/login.html', {
-                'error': '学号或密码不正确',
+                'form': form,
+                'error': '学号或密码不正确'
             })
-    return render(request, 'students/login.html')
+    else:
+        form = StudentLoginForm()  # 实例化表单
+
+    return render(request, 'students/login.html', {'form': form})
 
 
 # 用户登出

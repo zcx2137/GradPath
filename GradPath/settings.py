@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'students.apps.StudentsConfig',
     'counselors.apps.CounselorsConfig',
     'admins.apps.AdminsConfig',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -131,4 +132,9 @@ LOGIN_REDIRECT_URL = '/student/'    # 登录后重定向页面，我们手动控
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# 验证码配置
+CAPTCHA_IMAGE_SIZE = (100, 40)  # 验证码图片尺寸
+CAPTCHA_LENGTH = 4  # 验证码字符长度
+CAPTCHA_TIMEOUT = 120  # 验证码有效期（秒）
 

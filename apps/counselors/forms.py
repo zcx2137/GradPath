@@ -1,5 +1,7 @@
 from django import forms
 from students.models import Rule
+from captcha.fields import CaptchaField
+
 
 class RuleForm(forms.ModelForm):
     class Meta:
@@ -25,3 +27,13 @@ class RuleForm(forms.ModelForm):
         if score is not None and score <= 0:
             raise forms.ValidationError("加分分值必须大于0")
         return score
+
+
+# 辅导员登录表单（含验证码）
+class CounselorLoginForm(forms.Form):
+    # 辅导员账号字段（可根据你的业务调整，比如工号/手机号/用户名）
+    counselor_id = forms.CharField(label='工号', max_length=20, required=True)
+    # 密码字段（密码输入框）
+    password = forms.CharField(label='密码', widget=forms.PasswordInput, required=True)
+    # 验证码字段（核心：和学生端一样添加CaptchaField）
+    captcha = CaptchaField(label='验证码')

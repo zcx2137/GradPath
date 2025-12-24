@@ -17,6 +17,7 @@ from django.http import HttpResponse,Http404
 import csv
 from django.db.models import Q
 
+
 # 辅导员注册表单
 class CounselorRegistrationForm(forms.Form):
     employee_id = forms.CharField(label='工号', max_length=20)
