@@ -13,7 +13,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .forms import RuleForm
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404
 import csv
 from django.db.models import Q
 
@@ -226,7 +226,7 @@ def approve_submission(request, submission_id):
         Notification.objects.create(
             recipient=student.user,  # 接收通知的学生用户
             title="材料审核通过",
-            content=f"您提交的「{submission.get_category_display()}」材料已审核通过，核定加分：{submission.approved_score}分",
+            content=f"您提交的「{submission.category.get_group_display()} - {submission.category.name}」材料已审核通过，核定加分：{submission.approved_score}分",
             type='submission'  # 提交审核类型通知
         )
 
@@ -251,7 +251,7 @@ def reject_submission(request, submission_id):
         Notification.objects.create(
             recipient=submission.student.user,  # 接收通知的学生用户
             title="材料审核未通过",
-            content=f"您提交的「{submission.get_category_display()}」材料未通过审核，原因：{submission.reject_reason}",
+            content=f"您提交的「{submission.category.get_group_display()} - {submission.category.name}」材料未通过审核，原因：{submission.reject_reason}",
             type='submission'  # 提交审核类型通知
         )
 
@@ -261,31 +261,23 @@ def reject_submission(request, submission_id):
 # 审核详情页
 @login_required
 def review_detail(request, submission_id):
-    # 关键：用 select_related('student') 预加载学生关联数据
-    # 同时只允许查看未处理（未通过且未驳回）的申请
-    submission = get_object_or_404(
-        Submission.objects.select_related('student'),  # 必须保留这一行，否则模板无法访问 student
-        id=submission_id,
-        approved=False,
-        rejected=False  # 确保辅导员只能操作未处理的申请
-    )
+    # 验证是否为辅导员
+    if not hasattr(request.user, 'counselor_profile'):
+        return redirect('login')
 
-    # 处理驳回逻辑
-    if request.method == 'POST':
-        if 'reject' in request.POST:
-            submission.rejected = True  # 标记为驳回
-            submission.save()
-            messages.success(request, "申请已成功驳回")
-            return redirect('review_submissions')  # 驳回后跳回列表页
-        elif 'approve' in request.POST:
-            submission.approved = True  # 处理通过逻辑（如果需要）
-            submission.save()
-            messages.success(request, "申请已成功通过")
-            return redirect('review_submissions')
+    counselor = request.user.counselor_profile
+    # 查询指定ID的提交，同时过滤本学院、本年级（确保权限），不限制状态（包括已审核）
+    try:
+        submission = Submission.objects.get(
+            id=submission_id,
+            student__college=counselor.college,  # 仅本学院
+            student__grade=counselor.grade  # 仅本年级
+        )
+    except Submission.DoesNotExist:
+        raise Http404("No Submission matches the given query.")  # 明确404原因
 
-    #  GET 请求时返回详情页
     return render(request, 'counselors/review_detail.html', {
-        'submission': submission  # 此时 submission 已包含 student 关联数据
+        'submission': submission
     })
 
 
@@ -348,7 +340,7 @@ def reset_submission(request, submission_id):
         Notification.objects.create(
             recipient=submission.student.user,
             title="材料审核状态更新",
-            content=f"您提交的「{submission.get_category_display()}」材料审核状态已重置，将重新审核",
+            content=f"您提交的「{submission.category.get_group_display()} - {submission.category.name}」材料审核状态已重置，将重新审核",
             type='submission'
         )
 
